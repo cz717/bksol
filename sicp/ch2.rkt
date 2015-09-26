@@ -1,4 +1,6 @@
 ;;; Chapter 2 Building Abstractions with Data
+(load "ch1.rkt")
+(load "support/ch2.scm")
 
 ;; Exercise 2.1
 (define (make-rat n d)
@@ -120,10 +122,63 @@
 
 
 ;; Exercise 2.7
-(define (make-interval a b)
-  (cons a b))
 (define (upper-bound int)
   (max (car int) (cdr int)))
 (define (lower-bound int)
   (min (car int) (cdr int)))
 
+
+;; Exercise 2.8
+(define (sub-interval x y)
+  (make-interval
+   (- (lower-bound x) (upper-bound y))
+   (- (upper-bound x) (lower-bound y))))
+
+
+;; Exercise 2.9
+(define e1 (make-interval 2 3))
+(define e2 (make-interval 3 4))
+(define e3 (make-interval 5 6))
+(mul-interval e1 e3)
+(mul-interval e2 e3)
+(div-interval e3 e1)
+(div-interval e3 e2)
+
+;; Exercise 2.10
+(define (div-interval x y)
+  (let ((ub (upper-bound y))
+        (lb (lower-bound y)))
+    (if (or (= ub 0) (= lb 0))
+        (write "y may be 0 in (div-interval x y)")
+        (mul-interval x
+                      (make-interval (/ 1.0 ub)
+                                     (/ 1.0 lb))))))
+
+
+;; Exercise 2.11
+(define (mul-interval x y)
+  (let ((lx (lower-bound x))
+        (ux (upper-bound x))
+        (ly (lower-bound y))
+        (uy (upper-bound y)))
+    (let ((cx1 (and (< lx 0) (< ux 0)))
+          (cx2 (and (< lx 0) (>= ux 0)))
+          (cx3 (and (>= lx 0) (>= ux 0)))
+          (cy1 (and (< ly 0) (< uy 0)))
+          (cy2 (and (< ly 0) (>= uy 0)))
+          (cy3 (and (>= ly 0) (>= uy 0))))
+      (cond
+        (cx1 (cond
+               (cy1 (make-interval (* ux uy) (* lx ly)))
+               (cy2 (make-interval (* lx uy) (* lx ly)))
+               (cy3 (make-interval (* lx uy) (* ux ly)))))
+        (cx2 (cond
+               (cy1 (make-interval (* ux ly) (* lx ly)))
+               (cy2 (make-interval (min (* lx uy) (* ux ly))
+                                   (max (* lx ly) (* ux uy))))
+               (cy3 (make-interval (* lx uy) (* ux uy)))))
+        (cx3 (cond
+               (cy1 (make-interval (* ux ly) (* lx uy)))
+               (cy2 (make-interval (* ux ly) (* ux uy)))
+               (cy3 (make-interval (* lx ly) (* ux uy)))))))))
+        
