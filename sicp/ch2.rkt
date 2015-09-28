@@ -328,4 +328,66 @@
 (define branch-length car)
 (define branch-structure cadr)
 ;  b
+(define (total-weight mobile)
+  (if (not (pair? mobile))
+      mobile
+      (let ((lb (left-branch mobile))
+            (rb (right-branch mobile)))
+        (+ (branch-weight lb)
+           (branch-weight rb)
+           (total-weight (branch-structure lb))
+           (total-weight (branch-structure rb))))))
+;  c
+(define (balance? mobile)
+  (if (not (pair? mobile))
+      #t
+      (let ((lb (left-branch mobile))
+            (rb (right-branch mobile)))
+        (let ((ll (branch-length lb))
+              (ls (branch-structure lb))
+              (rl (branch-length rb))
+              (rs (branch-structure rb)))
+          (and (balance? ls)
+               (balance? rs)
+               (= (* ll (total-weight ls))
+                  (* rl (total-weight rs))))))))
+;  d
+(define right-branch cdr)
+(define branch-structure cdr)
 
+
+;; Exercise 2.30
+(define (square-tree tree)
+  (cond
+    ((null? tree) nil)
+    ((not (pair? tree)) (square tree))
+    (else (cons (square-tree (car tree))
+                (square-tree (cdr tree))))))
+
+(define (square-tree tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (square-tree sub-tree)
+             (square sub-tree)))
+       tree))
+
+
+;; Exercise 2.31
+(define (tree-map proc tree)
+  (cond
+    ((null? tree) nil)
+    ((not (pair? tree)) (proc tree))
+    (else (cons (tree-map proc (car tree))
+                (tree-map proc (cdr tree))))))
+
+
+;; Exercise 2.32
+(define (subsets s)
+  (if (null? s)
+      (list nil)
+      (let ((rest (subsets (cdr s))))
+        (append rest (map (lambda (x) (cons (car s) x))
+                          rest)))))
+
+
+;; Exercise 2.33
