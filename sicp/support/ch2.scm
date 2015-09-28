@@ -123,24 +123,24 @@
 
 
 ;;;SECTION 2.1.3
-(define (cons x y)
+(define (cons2 x y)
   (define (dispatch m)
     (cond ((= m 0) x)
           ((= m 1) y)
           (else (error "Argument not 0 or 1 -- CONS" m))))
   dispatch)
 
-(define (car z) (z 0))
+(define (car2 z) (z 0))
 
-(define (cdr z) (z 1))
+(define (cdr2 z) (z 1))
 
 
 ;; EXERCISE 2.4
 
-(define (cons x y)
+(define (cons24 x y)
   (lambda (m) (m x y)))
 
-(define (car z)
+(define (car24 z)
   (z (lambda (p q) p)))
 
 
@@ -214,25 +214,25 @@
 ;: (car (cdr one-through-four))
 ;: (cons 10 one-through-four)
 
-(define (list-ref items n)
+(define (list-ref2 items n)
   (if (= n 0)
       (car items)
-      (list-ref (cdr items) (- n 1))))
+      (list-ref2 (cdr items) (- n 1))))
 
 ;: (define squares (list 1 4 9 16 25))
 
 ;: (list-ref squares 3)
 
-(define (length items)
+(define (length2 items)
   (if (null? items)
       0
-      (+ 1 (length (cdr items)))))
+      (+ 1 (length2 (cdr items)))))
 
 ;: (define odds (list 1 3 5 7))
 
 ;: (length odds)
 
-(define (length items)
+(define (length3 items)
   (define (length-iter a count)
     (if (null? a)
         count
@@ -243,10 +243,10 @@
 ;: (append odds squares)
 
 
-(define (append list1 list2)
+(define (append2 list1 list2)
   (if (null? list1)
       list2
-      (cons (car list1) (append (cdr list1) list2))))
+      (cons (car list1) (append2 (cdr list1) list2))))
 
 
 ;; EXERCISE 2.17
@@ -294,11 +294,11 @@
 ;:      (list 1 2 3)
 ;:      (list 4 5 6))
 
-(define (map proc items)
+(define (map2 proc items)
   (if (null? items)
       nil
       (cons (proc (car items))
-            (map proc (cdr items)))))
+            (map2 proc (cdr items)))))
 
 ;: (map abs (list -10 2.5 -11.6 17))
 
@@ -837,10 +837,10 @@
 ;: (cdr '(a b c))
 
 
-(define (memq item x)
+(define (memq2 item x)
   (cond ((null? x) false)
         ((eq? item (car x)) x)
-        (else (memq item (cdr x)))))
+        (else (memq2 item (cdr x)))))
 
 ;: (memq 'apple '(pear banana prune))
 ;: (memq 'apple '(x (apple sauce) y apple pear))
@@ -1189,14 +1189,14 @@
 
 ;; Ben (rectangular)
 
-(define (real-part z) (car z))
+(define (real-part2 z) (car z))
 
-(define (imag-part z) (cdr z))
+(define (imag-part2 z) (cdr z))
 
-(define (magnitude z)
+(define (magnitude2 z)
   (sqrt (+ (square (real-part z)) (square (imag-part z)))))
 
-(define (angle z)
+(define (angle2 z)
   (atan (imag-part z) (real-part z)))
 
 (define (make-from-real-imag x y) (cons x y))
@@ -1207,15 +1207,15 @@
 
 ;; Alyssa (polar)
 
-(define (real-part z)
+(define (real-part3 z)
   (* (magnitude z) (cos (angle z))))
 
-(define (imag-part z)
+(define (imag-part3 z)
   (* (magnitude z) (sin (angle z))))
 
-(define (magnitude z) (car z))
+(define (magnitude3 z) (car z))
 
-(define (angle z) (cdr z))
+(define (angle3 z) (cdr z))
 
 (define (make-from-real-imag x y) 
   (cons (sqrt (+ (square x) (square y)))
@@ -1290,28 +1290,28 @@
 
 ;; Generic selectors
 
-(define (real-part z)
+(define (real-part4 z)
   (cond ((rectangular? z) 
          (real-part-rectangular (contents z)))
         ((polar? z)
          (real-part-polar (contents z)))
         (else (error "Unknown type -- REAL-PART" z))))
 
-(define (imag-part z)
+(define (imag-part4 z)
   (cond ((rectangular? z)
          (imag-part-rectangular (contents z)))
         ((polar? z)
          (imag-part-polar (contents z)))
         (else (error "Unknown type -- IMAG-PART" z))))
 
-(define (magnitude z)
+(define (magnitude4 z)
   (cond ((rectangular? z)
          (magnitude-rectangular (contents z)))
         ((polar? z)
          (magnitude-polar (contents z)))
         (else (error "Unknown type -- MAGNITUDE" z))))
 
-(define (angle z)
+(define (angle4 z)
   (cond ((rectangular? z)
          (angle-rectangular (contents z)))
         ((polar? z)
@@ -1337,13 +1337,13 @@
 
 (define (install-rectangular-package)
   ;; internal procedures
-  (define (real-part z) (car z))
-  (define (imag-part z) (cdr z))
+  (define (real-part5 z) (car z))
+  (define (imag-part5 z) (cdr z))
   (define (make-from-real-imag x y) (cons x y))
-  (define (magnitude z)
+  (define (magnitude5 z)
     (sqrt (+ (square (real-part z))
              (square (imag-part z)))))
-  (define (angle z)
+  (define (angle5 z)
     (atan (imag-part z) (real-part z)))
   (define (make-from-mag-ang r a) 
     (cons (* r (cos a)) (* r (sin a))))
@@ -1362,12 +1362,12 @@
 
 (define (install-polar-package)
   ;; internal procedures
-  (define (magnitude z) (car z))
-  (define (angle z) (cdr z))
+  (define (magnitude6 z) (car z))
+  (define (angle6 z) (cdr z))
   (define (make-from-mag-ang r a) (cons r a))
-  (define (real-part z)
+  (define (real-part6 z)
     (* (magnitude z) (cos (angle z))))
-  (define (imag-part z)
+  (define (imag-part6 z)
     (* (magnitude z) (sin (angle z))))
   (define (make-from-real-imag x y) 
     (cons (sqrt (+ (square x) (square y)))
@@ -1400,10 +1400,10 @@
 
 ;; Generic selectors
 
-(define (real-part z) (apply-generic 'real-part z))
-(define (imag-part z) (apply-generic 'imag-part z))
-(define (magnitude z) (apply-generic 'magnitude z))
-(define (angle z) (apply-generic 'angle z))
+(define (real-part7 z) (apply-generic 'real-part z))
+(define (imag-part7 z) (apply-generic 'imag-part z))
+(define (magnitude7 z) (apply-generic 'magnitude z))
+(define (angle7 z) (apply-generic 'angle z))
 
 
 ;; Constructors for complex numbers
@@ -1624,7 +1624,7 @@
 ;:               scheme-number->scheme-number)
 ;: (put-coercion 'complex 'complex complex->complex)
 
-(define (exp x y) (apply-generic 'exp x y))
+(define (exp2 x y) (apply-generic 'exp x y))
 ;: (put 'exp '(scheme-number scheme-number)
 ;:      (lambda (x y) (tag (expt x y))))
 
@@ -1761,10 +1761,10 @@
 
 ;; Rational functions
 
-(define (gcd a b)
+(define (gcd2 a b)
   (if (= b 0)
       a
-      (gcd b (remainder a b))))
+      (gcd2 b (remainder a b))))
 
 (define (gcd-terms a b)
   (if (empty-termlist? b)

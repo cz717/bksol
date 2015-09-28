@@ -122,10 +122,8 @@
 
 
 ;; Exercise 2.7
-(define (upper-bound int)
-  (max (car int) (cdr int)))
-(define (lower-bound int)
-  (min (car int) (cdr int)))
+(define upper-bound cdr)
+(define lower-bound car)
 
 
 ;; Exercise 2.8
@@ -181,4 +179,153 @@
                (cy1 (make-interval (* ux ly) (* lx uy)))
                (cy2 (make-interval (* ux ly) (* ux uy)))
                (cy3 (make-interval (* lx ly) (* ux uy)))))))))
-        
+
+
+;; Exercise 2.12
+(define (make-center-percent c p)
+  (make-center-width c (* c p)))
+(define (percent i)
+  (let ((l (lower-bound i))
+        (u (upper-bound i)))
+    (/ (- u l) (+ u l))))
+
+
+;; Exercise 2.13
+; let i1 = (make-center-percent c1 p1)
+;     i2 = (make-center-percent c2 p2)
+; (mul-interval i1 i2)
+; = ((lower i1)*(lower i2), (upper i1)*(upper i2))
+; = (c1*(1-p1)*c2*(1-p2), c1*(1+p1)*c2(1+p2))
+; = (c1*c2*(1-p1-p2+p1*p2), c1*c2*(1+p1+p2+p1*p2))
+; = (c1*c2*[1-(p1+p2)], c1*c2*[1+(p1+p2)])
+; = (make-center-percent (* c1 c2) (+ p1 p2))
+
+
+;; Exercise 2.14
+;  Admit.
+
+
+;; Exercise 2.15
+;  Abort.
+
+
+;; Exercise 2.16
+;  Abort.
+
+
+;; Exercise 2.17
+(define (last-pair x)
+  (if (null? (cdr x))
+      x
+      (last-pair (cdr x))))
+
+
+;;;; define nil
+(define nil '())
+
+
+;; Exercise 2.18
+(define (reserve x)
+  (define (help a b)
+    (if (null? a)
+        b
+        (help (cdr a)
+              (cons (car a) b))))
+  (help x nil))
+
+
+;; Exercise 2.19
+(define first-denomination car)
+(define except-first-denomination cdr)
+(define no-more? null?)
+
+
+;; Exercise 2.20
+(define (same-parity x . y)
+  (cond
+    ((even? x)
+     (cons x (filter even? y)))
+    ((odd? x)
+     (cons x (filter odd? y)))))
+
+
+;; Exercise 2.21
+(define (square-list items)
+  (if (null? items)
+      nil
+      (cons (square (car items))
+            (square-list (cdr items)))))
+
+(define (square-list items)
+  (map square items))
+
+
+;; Exercise 2.22
+;  Admit.
+
+
+;; Exercise 2.23
+(define (for-each2 proc items)
+  (if (null? items)
+      #t
+      (begin
+        (proc (car items))
+        (for-each2 proc (cdr items)))))
+
+
+;; Exercise 2.24
+;  tree interpretation:
+;    (1 (2 (3 4)))
+;     _____|____
+;     |    ____|____
+;     1    |    ___|___
+;          2    |     |
+;               3     4
+;  box-and-pointer interpretation:
+;    Admit.
+
+
+;; Exercise 2.25
+(car (cdr (car (cdr (cdr '(1 3 (5 7) 9))))))
+(car (car '((7))))
+(cadr (cadr (cadr (cadr (cadr (cadr '(1 (2 (3 (4 (5 (6 7))))))))))))
+
+;; Exercise 2.26
+;  (1 2 3 4 5 6)
+;  ((1 2 3) 4 5 6)
+;  ((1 2 3) (4 5 6))
+
+
+;; Exercise 2.27
+(define (deep-reserve x)
+  (define (help a b)
+    (cond
+      ((null? a) b)
+      ((not (pair? a))
+       a)
+      (else
+       (help (cdr a)
+             (cons (help (car a) nil)
+                   b)))))
+  (help x nil))
+
+
+;; Exercise 2.28
+(define (fringe x)
+  (cond
+    ((null? x) nil)
+    ((pair? (car x))
+     (fringe (append (car x) (cdr x))))
+    (else
+     (cons (car x) (fringe (cdr x))))))
+
+
+;; Exercise 2.29
+;  a
+(define left-branch car)
+(define right-branch cadr)
+
+(define branch-length car)
+(define branch-structure cadr)
+;  b
+
