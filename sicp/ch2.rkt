@@ -225,7 +225,7 @@
 
 
 ;; Exercise 2.18
-(define (reserve x)
+(define (reverse218 x)
   (define (help a b)
     (if (null? a)
         b
@@ -329,28 +329,30 @@
 (define branch-structure cadr)
 ;  b
 (define (total-weight mobile)
-  (if (not (pair? mobile))
-      mobile
-      (let ((lb (left-branch mobile))
-            (rb (right-branch mobile)))
-        (+ (branch-weight lb)
-           (branch-weight rb)
-           (total-weight (branch-structure lb))
-           (total-weight (branch-structure rb))))))
+  (define (p s)
+    (if (pair? s)
+        (total-weight s)
+        s))
+  (+ (p (branch-structure (left-branch mobile)))
+     (p (branch-structure (right-branch mobile)))))
 ;  c
 (define (balance? mobile)
-  (if (not (pair? mobile))
-      #t
-      (let ((lb (left-branch mobile))
-            (rb (right-branch mobile)))
-        (let ((ll (branch-length lb))
-              (ls (branch-structure lb))
-              (rl (branch-length rb))
-              (rs (branch-structure rb)))
-          (and (balance? ls)
-               (balance? rs)
-               (= (* ll (total-weight ls))
-                  (* rl (total-weight rs))))))))
+  (define (b m)
+    (if (pair? m)
+        (let ((lb (left-branch m))
+              (rb (right-branch m)))
+          (let ((ls (branch-structure lb))
+                (rs (branch-structure rb)))
+            (let ((b1 (b ls))
+                  (b2 (b rs)))
+              (cond ((= b1 #f) #f)
+                    ((= b2 #f) #f)
+                    ((= (* b1 (branch-length lb))
+                        (* b2 (branch-length rb)))
+                     (+ b1 b2))
+                    (else #f))))))
+    m)
+  (not (= (b mobile) #f)))
 ;  d
 (define right-branch cdr)
 (define branch-structure cdr)
@@ -391,3 +393,68 @@
 
 
 ;; Exercise 2.33
+(define (map233 p sequence)
+  (accumulate (lambda (x y) (cons (p x) y)) nil sequence))
+
+(define (append233 seq1 seq2)
+  (accumulate cons seq2 seq1))
+
+(define (length233 sequence)
+  (accumulate (lambda (x y) (+ 1 y)) 0 sequence))
+
+
+;; Exercise 2.34
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms)
+                (+ this-coeff (* x higher-terms)))
+              0
+              coefficient-sequence))
+
+
+;; Exercise 2.35
+(define (count-leaves t)
+  (accumulate +
+              0
+              (map (lambda (x)
+                     (if (pair? x)
+                         (count-leaves x)
+                         1))
+                    t)))
+
+
+;; Exercise 2.36
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      nil
+      (cons (accumulate op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
+
+;; Exercise 2.37
+(define (matrix-*-vector m v)
+  (map (lambda (x) (dot-product x v)) m))
+
+(define (transpose mat)
+  (accumulate-n cons nil mat))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (x)
+           (matrix-*-vector cols x))
+         m)))
+
+
+;; Exercise 2.39
+;  Abort.
+
+
+;; Exercise 2.39
+(define (reverse1 sequence)
+  (fold-right (lambda (x y) <??>) nil sequence))
+
+(define (reverse2 sequence)
+  (fold-left (lambda (x y) (cons y x)) nil sequence))
+
+
+
+;; Exercise 2.40
