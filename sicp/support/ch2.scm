@@ -647,11 +647,11 @@
          (lambda (positions) (safe? k positions))
 	 ;; next expression changed
          (flatmap
-	  (lambda (new-row)
-	    (map (lambda (rest-of-queens)
-		   (adjoin-position new-row k rest-of-queens))
-		 (queen-cols (- k 1))))
-	  (enumerate-interval 1 board-size)))))
+          (lambda (new-row)
+            (map (lambda (rest-of-queens)
+                   (adjoin-position new-row k rest-of-queens))
+                 (queen-cols (- k 1))))
+          (enumerate-interval 1 board-size)))))
   (queen-cols board-size))
 
 ;;;SECTION 2.2.4

@@ -444,7 +444,7 @@
          m)))
 
 
-;; Exercise 2.39
+;; Exercise 2.38
 ;  Abort.
 
 
@@ -456,5 +456,63 @@
   (fold-left (lambda (x y) (cons y x)) nil sequence))
 
 
-
 ;; Exercise 2.40
+(define (unique-pairs n)
+  (flatmap
+   (lambda (x)
+     (map (lambda (y) (list x y))
+          (enumerate-interval 1 (- x 1))))
+   (enumerate-interval 1 n)))
+
+(define (prime-sum-pair n)
+  (map make-pair-sum
+       (filter prime-sum?
+               (unique-pairs n))))
+
+
+;; Exercise 2.41
+(define (unique-orded-trip n s)
+  (map
+   (lambda (x)
+     (list (car x) (cadr x) (- s (car x) (cadr x))))
+   (filter
+    (lambda (x)
+      (let ((t (- s (car x) (cadr x))))
+        (and (and (> t 0) (<= t n))
+             (not (or (= (car x) (cadr x))
+                      (= (car x) t)
+                      (= (cadr x) t))))))
+    (flatmap
+     (lambda (x)
+       (map (lambda (y) (list x y))
+            (enumerate-interval 1 n)))
+     (enumerate-interval 1 n)))))
+
+
+;; Exercise 2.42
+(define empty-board '())
+
+(define (adjoin-position new-row k rest-of-queens)
+  (append rest-of-queens (list new-row)))
+
+(define (safe? k positions)
+  (define (not-check p x kth)
+    (let ((xth (car p)))
+      (if (>= x k)
+          #t
+          (if (not (or (= xth kth)
+                       (= (- kth k) (- xth x))
+                       (= (+ kth k) (+ xth x))))
+              (not-check (cdr p) (+ x 1) kth)
+              #f))))
+  (define (nth n l)
+    (if (= n 1)
+        (car l)
+        (nth (- n 1) (cdr l))))
+  (not-check positions 1 (nth k positions)))
+
+
+;; Exercise 2.43
+;  (* T (expt 8 8))
+
+
