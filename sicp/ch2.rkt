@@ -516,3 +516,101 @@
 ;  (* T (expt 8 8))
 
 
+;; Exercise 2.44
+(define (up-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (up-split painter (- n 1))))
+        (below painter (beside smaller smaller)))))
+
+
+;; Exercise 2.45
+(define (split t1 t2)
+  (lambda (painter n)
+    (if (= n 0)
+        painter
+        (let ((smaller ((split t1 t2) painter (- n 1))))
+          (t1 painter (t2 smaller smaller))))))
+
+
+;; Exercise 2.46
+(define make-vect cons)
+(define xcor-vect car)
+(define ycor-vect cdr)
+
+(define (add-vect v1 v2)
+  (make-vect (+ (xcor-vect v1) (xcor-vect v2))
+             (+ (ycor-vect v1) (ycor-vect v2))))
+
+(define (sub-vect v1 v2)
+  (make-vect (- (xcor-vect v1) (xcor-vect v2))
+             (- (ycor-vect v1) (ycor-vect v2))))
+
+(define (scale-vect s v)
+  (make-vect (* s (xcor-vect v))
+             (* s (ycor-vect v))))
+
+
+;; Exercise 2.47
+;  the 1st implementation
+(define (make-frame origin edge1 edge2)
+  (list origin edge1 edge2))
+
+(define origin-frame car)
+(define edge1-frame cadr)
+(define edge2-frame caddr)
+
+;  the 2nd implementation
+(define (make-frame origin edge1 edge2)
+  (cons origin (cons edge1 edge2)))
+
+(define origin-frame car)
+(define edge1-frame cadr)
+(define edge2-frame cddr)
+
+
+;; Exercise 2.48
+(define make-segment cons)
+(define start-segment car)
+(define end-segment cdr)
+  
+
+;; Exercise 2.49
+;  a
+(define (draw-outline frame)
+  (let ((bl (make-vect 0.0 0.0))
+        (br (make-vect 1.0 0.0))
+        (ul (make-vect 0.0 1.0))
+        (ur (make-vect 1.0 1.0)))
+    (segments->painter
+     (list (make-segment bl ul)
+           (make-segment bl br)
+           (make-segment ul ur)
+           (make-segment br ur)))))
+;  b
+(define (draw-x frame)
+  (let ((bl (make-vect 0.0 0.0))
+        (br (make-vect 1.0 0.0))
+        (ul (make-vect 0.0 1.0))
+        (ur (make-vect 1.0 1.0)))
+    (segments->painter
+     (list (make-segment bl ur)
+           (make-segment br ul)))))
+;  c
+(define (draw-diamond frame)
+  (let ((bm (make-vect 0.5 0.0))
+        (um (make-vect 0.5 1.0))
+        (lm (make-vect 0.0 0.5))
+        (rm (make-vect 1.0 0.5)))
+    (segments->painter
+     (list (make-segment bm lm)
+           (make-segment bm rm)
+           (make-segment um lm)
+           (make-segment bm rm)))))
+;  d
+; Admit.
+
+
+;; Exercise 2.50
+
+
