@@ -612,5 +612,195 @@
 
 
 ;; Exercise 2.50
+(define (flip-horiz painter)
+  (transform-painter painter
+                     (make-vect 1.0 0.0)
+                     (make-vect 0.0 0.0)
+                     (make-vect 1.0 1.0)))
+
+(define (rotate180 painter)
+  (transform-painter painter
+                     (make-vect 1.0 1.0)
+                     (make-vect 0.0 1.0)
+                     (make-vect 1.0 0.0)))
+
+(define (rotate270 painter)
+  (transform-painter painter
+                     (make-vect 1.0 0.0)
+                     (make-vect 0.0 0.0)
+                     (make-vect 1.0 1.0)))
 
 
+;; Exercise 2.51
+(define (below painter1 painter2)
+  (let ((split-point (make-vect 0.0 0.5)))
+    (let ((paint-below
+           (transform-painter painter1
+                              (make-vect 0.0 0.0)
+                              (make-vect 1.0 0.0)
+                              split-point))
+          (paint-above
+           (transform-painter painter2
+                              split-point
+                              (make-vect 1.0 0.5)
+                              (make-vect 0.0 1.0))))
+      (lambda (frame)
+        (paint-below frame)
+        (paint-above frame)))))
+
+(define (below painter1 painter2)
+  (rotate90 (beside (rotate90 painter1)
+                    (rotate90 painter2))))
+
+
+;; Exercise 2.52
+;  Admit.
+
+
+;; Exercise 2.53
+;  (a b c)
+;  ((george))
+;  ((y1 y2))
+;  (y1 y2)
+;  #f
+;  #f
+;  (red shoes blue socks)
+
+
+;; Exercise 2.54
+(define (equal?254 a b)
+  (cond
+    ((and (symbol? a) (symbol? b))
+     (eq? a b))
+    ((and (null? a) (null? b))
+     #t)
+    ((and (pair? a) (pair? b))
+     (and (equal?254 (car a) (car b))
+          (equal?254 (cdr a) (cdr b))))
+    (else
+     #f)))
+
+
+;; Exercise 2.55
+; ''abracadabra is actualy (quote (quote abracadabra)),
+; which is a list of symbol (quote abracadabra).
+
+
+;; Exercise 2.56
+(define (exponentiation? a)
+  (and (pair? a) (eq? (car a) '**)))
+
+(define (base e) (cadr e))
+
+(define (exponent e) (caddr e))
+
+(define (make-exponentiation b e)
+  (cond
+    ((=number? e 0) 1)
+    ((=number? e 1) b)
+    ((and (number? b) (number? e))
+     (expt b e))
+    (else
+     (list '** b e))))
+
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+         (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+           (make-product (multiplier exp)
+                         (deriv (multiplicand exp) var))
+           (make-product (deriv (multiplier exp) var)
+                         (multiplicand exp))))
+        ((exponentiation? exp)
+         (make-prodcuct
+          (exponent exp)
+          (make-product
+           (make-exponentiation (base exp) (- (exponent exp) 1))
+           (deriv (base (base exp) var)))))
+        (else
+         (error "unknown expression type -- DERIV" exp))))
+
+
+;; Exercise 2.57
+(define (make-sum a1 a2 . an)
+  (append (list '+ a1 a2) an))
+
+(define (sum? x)
+  (and (pair? x) (eq? (car x) '+)))
+
+(define (addend s) (cadr s))
+
+(define (augend s)
+  (if (> (length s) 3)
+      (cons '+ (cddr s))
+      (caddr s)))
+
+
+;; Exercise 2.58
+;  a
+(define (make-sum a1 a2)
+  (list a1 '+ a2))
+(define (sum? x)
+  (and (pair? x) (eq? (cadr x) '+)))
+(define (addend s) (car s))
+(define (augend s) (caddr s))
+
+(define (make-product a1 a2)
+  (list a1 '* a2))
+(define (product? x)
+  (and (pair? x) (eq? (cadr x) '*)))
+(define (multiplier s) (car s))
+(define (multiplicand s) (caddr s))
+
+;  b
+(define (make-sum a1 a2)
+  (append
+   (if (pair? a1) a1 (list a1))
+   '(+)
+   (if (pair? a2) a2 (list a2))))
+
+(define (sum? x)
+  (memq? '+ x))
+
+(define (addend s)
+  (define (list-head l k)
+    (if (zero? k)
+        '()
+        (cons (car l) (list-head (cdr l) (- k 1)))))
+  (let ((k (- (length s)
+              (length (memq '+ s)))))
+    (if (> k 1)
+        (list-head s k)
+        (car s))))
+
+(define (augend s)
+  (let ((x (memq '+ s)))
+    (if (> (length x) 2)
+        (cdr x)
+        (cadr x))))
+
+(define (make-product a1 a2)
+  (append
+   (if (product? a1) a1 (list a1))
+   '(*)
+   (if (product? a2) a2 (list a2))))
+
+(define (product? x)
+  (and (pair? x) (eq? (cadr x) '*)))
+
+(define (multiplier s) (car s))
+(define (multiplicand s)
+  (if (> (length s) 3)
+      (cddr s)
+      (caddr s)))
+
+;  test
+(define a1 (make-sum 'y 2))
+(define a2 (make-sum 'x a1))
+(define a3 (make-product 3 a2))
+(define a4 (make-sum 'x a3))
