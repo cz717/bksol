@@ -804,3 +804,85 @@
 (define a2 (make-sum 'x a1))
 (define a3 (make-product 3 a2))
 (define a4 (make-sum 'x a3))
+
+
+;; Exercise 2.59
+(define (union-set s1 s2)
+  (cond
+    ((null? s1) s2)
+    ((element-of-set? (car s1) s2)
+     (union-set (cdr s1) s2))
+    (else
+     (union-set (cdr s1) (adjoin-set (car s1) s2)))))
+
+
+;; Exercise 2.60
+(define (element-of-set? x set)
+  (cond ((null? set) #f)
+        ((equal? x (car set)) #t)
+        (else (element-of-set? x (cdr set)))))
+
+(define (adjoin-set x set)
+  (cons x set))
+
+(define (intersection-set set1 set2)
+  (cond ((or (null? set1) (null? set2)) '())
+        ((element-of-set? (car set1) set2)
+         (cons (car set1)
+               (intersection-set (cdr set1) set2)))
+        (else (intersection-set (cdr set1) set2))))
+
+(define (union-set s1 s2)
+  (append s1 s2))
+
+
+;; Exercise 2.61
+(define (adjoin-set x set)
+  (cond
+    ((null? set) (list x))
+    ((> x (car set))
+     (cons (car set) (adjoin-set x (cdr set))))
+    ((equal? x (car set))
+     set)
+    ((< x (car set))
+     (cons x set))))
+
+
+;; Exercise 2.62
+(define (union-set set1 set2)
+  (cond
+    ((null? set1) set2)
+    ((null? set2) set1)
+    (else
+     (let ((x1 (car set1)) (x2 (car set2)))
+       (cond
+         ((= x1 x2)
+          (cons x1 (union-set (cdr set1) (cdr set2))))
+         ((< x1 x2)
+          (cons x1 (union-set (cdr set1) set2)))
+         ((< x2 x1)
+          (cons x2 (union-set set1 (cdr set2)))))))))
+
+
+;; Exercise 2.63
+;  a not
+;  b same
+
+
+;; Exercise 2.64
+;  Admit.
+
+
+;; Exercise 2.65
+;  Admit.
+
+
+;; Exercise 2.66
+(define (lookup? given-key set)
+  (cond ((null? set) #f)
+        ((= given-key (key (entry set))) (entry set))
+        ((< given-key (key (entry set)))
+         (element-of-set? given-key (left-branch set)))
+        ((> given-key (key (entry set)))
+         (element-of-set? given-key (right-branch set)))))
+
