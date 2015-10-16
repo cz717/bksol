@@ -886,3 +886,46 @@
         ((> given-key (key (entry set)))
          (element-of-set? given-key (right-branch set)))))
 
+
+;; Exercise 2.67
+;  Admit.
+
+
+;; Exercise 2.68
+(define (encode-symbol s tree)
+  (cond
+    ((leaf? tree)
+     '())
+    ((not (element-of-set? s (symbols tree)))
+     (write "given symbol not in the tree"))
+    ((element-of-set? s (symbols (left-branch tree)))
+     (cons 0 (encode-symbol s (left-branch tree))))
+    ((element-of-set? s (symbols (right-branch tree)))
+     (cons 1 (encode-symbol s (right-branch tree))))))
+
+    
+;; Exercise 2.69
+(define (successive-merge trees)
+  (cond
+    ((null? trees) '())
+    ((= (length trees) 1)
+     (car trees))
+    (else
+     (successive-merge
+      (adjoin-set (make-code-tree (car trees) (cadr trees))
+                  (cddr trees))))))
+
+
+;; Exercise 2.70
+;  Admit.
+
+
+;; Exercise 2.71
+;  1, n-1
+
+
+;; Exercise 2.72
+;  O(1), O(n)
+
+
+;; Exercise 2.73
