@@ -929,3 +929,47 @@
 
 
 ;; Exercise 2.73
+;  a. Admit.
+;  b.
+(define (install-sum-prod-package)
+  ;; internal procedures
+  (define (der-sum ops var)
+    (make-sum (deriv (car ops) var)
+              (deriv (cdr ops) var)))
+  (define (der-prod ops var)
+    (make-sum
+     (make-product (multiplier exp)
+                   (deriv (car exp) var))
+     (make-product (deriv (cdr exp) var)
+                   (multiplicand exp))))
+
+  ;; interface to the rest of the system
+  (put 'deriv '+ der-sum)
+  (put 'deriv '* der-prod)
+  'done)
+;  c. Admit.
+;  d. Admit.
+
+
+;; Exercise 2.74
+;  Admit.
+
+
+;; Exercise 2.75
+(define (make-from-mag-ang x y)
+  (define (dispatch op)
+    (cond ((eq? op 'magnitude) x)
+          ((eq? op 'angle) y)
+          ((eq? op 'real-part)
+           (* x (cos y)))
+          ((eq? op 'imag-part)
+           (* x (sin y)))
+          (else
+           (error "Unknown op -- MAKE-FROM-MAG-ANG" op))))
+  dispatch)
+
+
+;; Exercise 2.76
+;  Admit.
+
+
