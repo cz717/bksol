@@ -935,12 +935,12 @@
   ;; internal procedures
   (define (der-sum ops var)
     (make-sum (deriv (car ops) var)
-              (deriv (cdr ops) var)))
+              (deriv (cadr ops) var)))
   (define (der-prod ops var)
     (make-sum
      (make-product (multiplier exp)
                    (deriv (car exp) var))
-     (make-product (deriv (cdr exp) var)
+     (make-product (deriv (cadr exp) var)
                    (multiplicand exp))))
 
   ;; interface to the rest of the system
@@ -973,3 +973,100 @@
 ;  Admit.
 
 
+;; Exercise 2.77
+;  Admit.
+
+
+;; Exercise 2.78
+(define (attach-tag type-tag contents)
+  (if (equal? type-tag 'scheme-number)
+      contents
+      (cons type-tag contents)))
+
+(define (type-tag datum)
+  (cond
+    ((number? datum) 'scheme-number)
+    ((pair? datum) (car datum))
+    (else (error "Bad tagged datum -- TYPE-TAG" datum))))
+
+(define (contents datum)
+  (cond
+    ((number? datum) datum)
+    ((pair? datum) (cdr datum))
+    (else (error "Bad tagged datum -- CONTENTS" datum))))
+
+
+;; Exercise 2.79
+;  Admit.
+
+
+;; Exercise 2.80
+;  Admit.
+
+
+;; Exercise 2.81
+;  a. Admit.
+;  b. Admit.
+;  c.
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args))
+          (if (= (length args) 2)
+              (let ((type1 (car type-tags))
+                    (type2 (cadr type-tags))
+                    (a1 (car args))
+                    (a2 (cadr args)))
+                (let ((t1->t2 (get-coercion type1 type2))
+                      (t2->t1 (get-coercion type2 type1)))
+                  (cond ((equal? type1 type2)
+                         (apply-generic op a1 a2))
+                        (t1->t2
+                         (apply-generic op (t1->t2 a1) a2))
+                        (t2->t1
+                         (apply-generic op a1 (t2->t1 a2)))
+                        (else
+                         (error "No method for these types"
+                                (list op type-tags))))))
+              (error "No method for these types"
+                     (list op type-tags)))))))
+
+
+;; Exercise 2.82
+;  Admit.
+
+
+;; Exercise 2.83
+(define (install-raise-package)
+  (put 'raise 'interger
+       raise-interger)
+  (put 'raise 'rational
+       raise-rational)
+  (put 'raise 'real
+       raise-real)
+  (put 'raise 'complex
+       (lambda (x) x))
+  'done)
+
+
+;; Exercise 2.84
+(define (higher? type1 type2 tower)
+  (cond
+    ((equal? type1 type2) #f)
+    ((null? tower) #f)
+    ((equal? type1 (car tower)) #t)
+    (else (higher? type1 type2 (cdr tower)))))
+  
+(define (number-higher? type1 type2)
+  (higher? type1 type2
+           '(complex real rational interger)))
+
+
+;; Exercise 2.85
+
+
+
+;; Exercise 2.86
+
+;; Exercise 2.87
