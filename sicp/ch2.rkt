@@ -1064,9 +1064,30 @@
 
 
 ;; Exercise 2.85
-
+;  Admit.
 
 
 ;; Exercise 2.86
+;  Admit.
+
 
 ;; Exercise 2.87
+;  Admit.
+
+
+;; Exercise 2.88
+(define (sub-poly p1 p2)
+  (if (same-variable? (variable p1) (variable p2))
+      (make-poly (variable p1)
+                 (add-terms (term-list p1)
+                            (negation-terms (term-list p2))))))
+
+(define (negation-terms terms)
+  (if (empty-termlist? terms)
+      (the-empty-termlist)
+      (let ((t (first-term terms)))
+        (add-terms
+         (make-term (order t)
+                    (negation (coeff t)))
+         (negation-terms (rest-terms terms))))))
+
