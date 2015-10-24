@@ -307,7 +307,7 @@
 ;;;SECTION 3.2.4
 
 ;; same as in section 1.1.8
-(define (sqrt x)
+(define (sqrt1 x)
   (define (good-enough? guess)
     (< (abs (- (square guess) x)) 0.001))
   (define (improve guess)
@@ -349,7 +349,7 @@
 
 ;;;SECTION 3.3.1
 
-(define (cons x y)
+(define (cons1 x y)
   (let ((new (get-new-pair)))
     (set-car! new x)
     (set-cdr! new y)
@@ -357,10 +357,10 @@
 
 
 ;; EXERCISE 3.12
-(define (append x y)
+(define (append1 x y)
   (if (null? x)
       y
-      (cons (car x) (append (cdr x) y))))
+      (cons (car x) (append1 (cdr x) y))))
 
 (define (append! x y)
   (set-cdr! (last-pair x) y)
@@ -428,18 +428,18 @@
 
 ;;;Mutation as assignment
 
-(define (cons x y)
+(define (cons2 x y)
   (define (dispatch m)
     (cond ((eq? m 'car) x)
           ((eq? m 'cdr) y)
           (else (error "Undefined operation -- CONS" m))))
   dispatch)
 
-(define (car z) (z 'car))
-(define (cdr z) (z 'cdr))
+(define (car2 z) (z 'car))
+(define (cdr2 z) (z 'cdr))
 
 
-(define (cons x y)
+(define (cons3 x y)
   (define (set-x! v) (set! x v))
   (define (set-y! v) (set! y v))
   (define (dispatch m)
@@ -450,14 +450,14 @@
           (else (error "Undefined operation -- CONS" m))))
   dispatch)
 
-(define (car z) (z 'car))
-(define (cdr z) (z 'cdr))
+(define (car3 z) (z 'car))
+(define (cdr3 z) (z 'cdr))
 
-(define (set-car! z new-value)
+(define (set-car!3 z new-value)
   ((z 'set-car!) new-value)
   z)
 
-(define (set-cdr! z new-value)
+(define (set-cdr!3 z new-value)
   ((z 'set-cdr!) new-value)
   z)
 
@@ -519,10 +519,10 @@
         (cdr record)
         false)))
 
-(define (assoc key records)
+(define (assoc1 key records)
   (cond ((null? records) false)
         ((equal? key (caar records)) (car records))
-        (else (assoc key (cdr records)))))
+        (else (assoc1 key (cdr records)))))
 
 (define (insert! key value table)
   (let ((record (assoc key (cdr table))))
@@ -1385,6 +1385,9 @@
 
 
 ;;;SECTION 3.5.2
+
+(define (cons-stream n m)
+  (cons n m))
 
 (define (integers-starting-from n)
   (cons-stream n (integers-starting-from (+ n 1))))

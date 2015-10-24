@@ -143,3 +143,108 @@
             (set! value (- last value)))
         (set! last x)
         value))))
+
+
+;; Exercise 3.9
+;  Admit.
+
+
+;; Exercise 3.10
+;  Admit.
+
+
+;; Exercise 3.11
+;  Admit.
+
+
+;; Exercise 3.12
+;  (b)
+;  (b c d)
+
+
+;; Exercise 3.13
+;  Admit.
+
+
+;; Exercise 3.14
+;  (a)
+;  (d c b a)
+
+
+;; Exercise 3.15
+;  Admit.
+
+
+;; Exercise 3.16
+(define ex3 '(a b c))
+
+(define temp0 (list 'b))
+(define ex4 (cons 'a (cons temp0 temp0)))
+
+(define temp1 (list 'a))
+(define temp2 (cons temp1 temp1))
+(define ex7 (cons temp2 temp2))
+
+(define (make-cycle x)
+  (set-cdr! (last-pair x) x)
+  x)
+(define exinf
+  (make-cycle '(a b c)))
+
+
+;; Exercise 3.17
+(define (count-pairs p)
+  (let ((s '()))
+    (define (cp p)
+      (cond
+        ((not (pair? p)) 0)
+        ((memq p s) 0)
+        (else (begin
+                (set! s (cons p s))
+                (+ 1
+                   (cp (car p))
+                   (cp (cdr p)))))))
+    (cp p)))
+
+
+;; Exercise 3.18
+(define (cycle? l)
+  (let ((s '()))
+    (define (c? l)
+      (cond
+        ((null? l) #f)
+        ((memq l s) #t)
+        (else
+         (begin
+           (set! s (cons l s))
+           (c? (cdr l))))))
+    (c? l)))
+
+
+;; Exercise 3.19
+(define (cycle? l)
+  (define (catch? slow fast)
+    (or (eq? slow fast)
+        (and (pair? fast)
+             (eq? slow (cdr fast)))))
+  (define (run slow fast)
+    (cond
+      ((null? slow) #f)
+      ((null? fast) #f)
+      ((null? (cdr fast)) #f)
+      ((catch? slow fast) #t)
+      (else
+       (run (cdr slow) (cddr fast)))))
+  (cond
+    ((null? l) #f)
+    ((null? (cdr l)) #f)
+    (else
+     (let ((slow l)
+           (fast (cdr l)))
+       (run slow fast)))))
+
+
+;; Exercise 3.20
+;  Admit.
+
+
