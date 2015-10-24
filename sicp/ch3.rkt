@@ -248,3 +248,84 @@
 ;  Admit.
 
 
+;; Exercise 3.21
+(define (print-queue q)
+  (front-ptr q))
+
+
+;; Exercise 3.22
+;  Admit.
+
+
+;; Exercise 3.23
+(define (front-ptr deque) (car deque))
+(define (rear-ptr deque) (cdr deque))
+(define (set-front-ptr! deque item) (set-car! deque item))
+(define (set-rear-ptr! deque item) (set-cdr! deque item))
+
+(define (make-node pre item suc)
+  (cons (cons pre suc) item))
+(define pre caar)
+(define suc cdar)
+(define item cdr)
+(define (set-pre! node p)
+  (set-car! (car node) p))
+(define (set-suc! node s)
+  (set-cdr! (car node) s))
+(define (set-item! node i)
+  (set-cdr! node i))
+
+(define (make-deque)
+  (cons '() '()))
+(define (empty-deque? deque)
+  (or (null? (front-ptr deque))
+      (null? (rear-ptr deque))))
+
+(define (front-deque deque)
+  (if (empty-deque? deque)
+      (write "front-deque called with an empty deque")
+      (item (front-ptr deque))))
+(define (rear-deque deque)
+  (if (empty-deque? deque)
+      (write "front-deque called with an empty deque")
+      (item (rear-ptr deque))))
+
+(define (front-insert-deque! deque item)
+  (let ((new-node (make-node '() item (front-ptr deque))))
+    (cond ((empty-deque? deque)
+           (set-front-ptr! deque new-node)
+           (set-rear-ptr! deque new-node)
+           deque)
+          (else
+           (set-pre! (front-ptr deque) new-node)
+           (set-front-ptr! deque new-node)
+           deque))))
+
+(define (rear-insert-deque! deque item)
+  (let ((new-node (make-node (rear-ptr deque) item '())))
+    (cond ((empty-deque? deque)
+           (set-front-ptr! deque new-node)
+           (set-rear-ptr! deque new-node)
+           deque)
+          (else
+           (set-suc! (rear-ptr deque) new-node)
+           (set-rear-ptr! deque new-node)
+           deque))))
+
+(define (front-delete-deque! deque)
+  (cond ((empty-deque? deque)
+         (write "front-delete! called with an empty deque"))
+        (else
+         (set-front-ptr! deque (suc (front-ptr deque)))
+         (if (not (empty-deque? deque))
+             (set-pre! (front-ptr deque) '()))
+         deque)))
+
+(define (rear-delete-deque! deque)
+  (cond ((empty-deque? deque)
+         (write "rear-delete! called with an empty deque"))
+        (else
+         (set-rear-ptr! deque (pre (rear-ptr deque)))
+         (if (not (empty-deque? deque))
+             (set-suc! (rear-ptr deque) '()))
+         deque)))
