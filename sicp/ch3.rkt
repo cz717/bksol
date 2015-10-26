@@ -329,3 +329,44 @@
          (if (not (empty-deque? deque))
              (set-suc! (rear-ptr deque) '()))
          deque)))
+
+
+;; Exercise 3.24
+;  Admit.
+
+
+;; Exercise 3.25
+;  Admit.
+
+
+;; Exercise 3.26
+;  Admit.
+
+
+;; Exercise 3.27
+;  Admit.
+
+
+;; Exercise 3.28
+(define (or-gate o1 o2 output)
+  (define (or-action-procedure)
+    (let ((new-value
+           (logical-or (get-signal o1) (get-signal o2))))
+      (after-delay or-gate-delay
+                   (lambda ()
+                     (set-signal! output new-value)))))
+  (add-action! o1 or-action-procedure)
+  (add-action! o2 or-action-procedure)
+  'ok)
+
+
+;; Exercise 3.29
+(define (or-gate o1 o2 output)
+  (let ((inv1 (make-wire))
+        (inv2 (make-wire))
+        (out (make-wire)))
+    (inverter or1 inv1)
+    (inverter or2 inv2)
+    (and-gate inv1 inv2 out)
+    (inverter out output)
+    'ok))
