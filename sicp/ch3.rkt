@@ -370,3 +370,78 @@
     (and-gate inv1 inv2 out)
     (inverter out output)
     'ok))
+
+
+;; Exercise 3.30
+;  Admit.
+
+
+;; Exercise 3.31
+;  Admit.
+
+
+;; Exercise 3.32
+;  Admit.
+
+
+;; Exercise 3.33
+(define (average a b c)
+  (let ((d (make-connector))
+        (e (make-connector)))
+    (adder a b e)
+    (multiplier c d e)
+    (constant 2 d)
+    'ok))
+
+
+;; Exercise 3.34
+;  Admit.
+
+
+;; Exercise 3.35
+(define (squarer a b)
+  (define (process-new-value)
+    (if (has-value? b)
+        (if (< (get-value b) 0)
+            (error "square less than 0 -- SQUARER" (get-value b))
+            (set-value! a (sqrt b) me))
+        (if (hase-value? a)
+            (set-value! b (* a a) me))))
+  (define (process-forget-value)
+    (forget-value! a me)
+    (forget-value! b me))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value)
+           (process-new-value))
+          ((eq? request 'I-lost-my-value)
+           (process-forget-value))
+          (else
+           (error "Unknown request -- MULTIPLIER" request))))
+  me)
+
+
+;; Exercise 3.36
+;  Admit.
+
+
+;; Exercise 3.37
+(define (c- x y)
+  (let ((z (make-connector)))
+    (adder y z x)
+    z))
+
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier x y z)
+    z))
+
+(define (c/ x y)
+  (let ((z (make-connector)))
+    (multiplier y x x)
+    z))
+
+(define (cv c)
+  (let ((x (make-connector)))
+    (constant c x)
+    x))
+
