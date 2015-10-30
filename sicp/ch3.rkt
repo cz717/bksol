@@ -445,3 +445,8 @@
     (constant c x)
     x))
 
+
+;; Exercise 3.38 - 3.49
+;  Admit.
+
+
