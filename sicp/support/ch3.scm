@@ -1317,13 +1317,25 @@
 
 ;; stream-car and stream-cdr would normally be built into
 ;;  the stream implementation
-;: (define (stream-car stream) (car stream))
-;: (define (stream-cdr stream) (force (cdr stream)))
+;; (define (stream-car stream) (car stream))
+;; (define (stream-cdr stream) (force (cdr stream)))
 
 ;: (stream-car
 ;:  (stream-cdr
 ;:   (stream-filter prime?
 ;:                  (stream-enumerate-interval 10000 1000000))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (stream-car stream) (car stream))
+(define (stream-cdr stream) (force (cdr stream)))
+(define the-empty-stream '())
+(define (stream-null? s)
+  (equal? s the-empty-stream))
+(define-syntax cons-stream
+  (syntax-rules ()
+    ((_ a b) (cons a (delay b)))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (define (stream-enumerate-interval low high)
   (if (> low high)
@@ -1386,8 +1398,9 @@
 
 ;;;SECTION 3.5.2
 
-(define (cons-stream n m)
-  (cons n m))
+;(define (cons-stream n m)
+;  (cons n m))
+
 
 (define (integers-starting-from n)
   (cons-stream n (integers-starting-from (+ n 1))))
@@ -1545,7 +1558,7 @@
                            (sqrt-stream x))))
 
 ;; EXERCISE 3.64
-(define (sqrt x tolerance)
+(define (sqrt2 x tolerance)
   (stream-limit (sqrt-stream x) tolerance))
 
 

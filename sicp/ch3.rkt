@@ -1,6 +1,6 @@
 ;;; Chapter 3 Modularity, Objects, and State
 (load "ch2.rkt")
-;(load "support/ch3.scm")
+(load "support/ch3.scm")
 
 ;; Exercise 3.1
 (define (make-accumulator sum)
@@ -450,3 +450,67 @@
 ;  Admit.
 
 
+;; Exercise 3.50
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
+      the-empty-stream
+      (cons-stream
+       (apply proc (map car argstreams))
+       (apply stream-map
+              (cons proc (map stream-cdr argstreams))))))
+
+
+;; Exercise 3.51
+;  Admit.
+
+
+;; Exercise 3.52
+;  Admit.
+
+
+;; Exercise 3.53
+;  (1 2 4 8 16 ... )
+
+
+;; Exercise 3.54
+(define (mul-streams s1 s2)
+  (stream-map * s1 s2))
+(define factorials
+  (cons-stream 1
+               (mul-streams (integers-starting-from 2)
+                            factorials)))
+
+
+;; Exercise 3.55
+(define (partial-sums s)
+  (cons-stream (car s)
+               (add-streams (stream-cdr s)
+                            (partial-sums s))))
+
+
+;; Exercise 3.56
+(define S (cons-stream 1
+                       (merge (scale-stream S 2)
+                              (merge (scale-stream S 3)
+                                     (scale-stream S 5)))))
+
+
+;; Exercise 3.57
+;  Admit.
+
+
+;; Exercise 3.58
+;  Admit.
+
+
+;; Exercise 3.59
+;  a
+(define (div-streams s1 s2)
+  (stream-map / s1 s2))
+(define (integrate-series s)
+  (div-streams s (integers-starting-from 1)))
+;  b
+(define cosine-series
+  (cons-stream 1 (stream-map - (integrate-series sine-series))))
+(define sine-series
+  (cons-stream 0 (integrate-series cosine-series)))
