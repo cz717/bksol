@@ -514,3 +514,154 @@
   (cons-stream 1 (stream-map - (integrate-series sine-series))))
 (define sine-series
   (cons-stream 0 (integrate-series cosine-series)))
+
+
+;; Exercise 3.60
+;  wrong
+(define (mul-series s1 s2)
+  (cons-stream (* (car s1) (car s2))
+               (add-streams (mul-series (stream-cdr s1) s2)
+                            (mul-series s1 (stream-cdr s2)))))
+(define x (add-streams (mul-series cosine-series cosine-series)
+                       (mul-series sine-series sine-series)))
+
+
+;; Exercise 3.61
+(define (invert-unit-series s)
+  (define invert
+    (cons-stream 1 (stream-map - (mul-series invert
+                                             (stream-cdr s)))))
+  invert)
+
+
+;; Exercise 3.62
+(define (div-series s1 s2)
+  (if (equal? (stream-car s2) 0)
+      (write "Error")
+      (mul-series s1 (inver-unit-series s2))))
+
+
+;; Exercise 3.63
+;  Admit.
+
+
+;; Exercise 3.64
+(define (stream-limit s t)
+  (if (< (abs (- (stream-ref s 0)
+                 (stream-ref s 1)))
+         t)
+      (stream-ref s 1)
+      (stream-limit (stream-cdr s) t)))
+
+
+;; Exercise 3.65
+;  Admit.
+
+
+;; Exercise 3.66
+;  Admit.
+
+
+;; Exercise 3.67
+;  wrong
+(define (pairs s t)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (interleave
+    (interleave
+     (stream-map (lambda (x) (list (stream-car s) x))
+                 (stream-cdr t))
+     (stream-map (lambda (x) (list x (stream-car t)))
+                 (stream-cdr s)))
+    (pairs (stream-cdr s) (stream-cdr t)))))
+
+
+;; Exercise 3.68
+;  Abort.
+
+
+;; Exercise 3.69
+
+
+;; Exercise 3.70
+(define (merge-weighted s1 s2 weight)
+  (cond ((stream-null? s1) s2)
+        ((stream-null? s2) s1)
+        (else
+         (let ((s1car (stream-car s1))
+               (s2car (stream-car s2)))
+           (cond
+             ((< (weight s1car) (weight s2car))
+              (cons-stream s1car (merge-weighted (stream-cdr s1) s2 weight)))
+             ((> (weight s1car) (weight s2car))
+              (cons-stream s2car (merge-weighted s1 (stream-cdr s2) weight)))
+             (else
+              (cons-stream s1car
+                           (cons-stream s2car
+                                        (merge-weighted (stream-cdr s1)
+                                                        (stream-cdr s2)
+                                                        weight)))))))))
+
+(define (weighted-pairs s t weight)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (merge-weighted
+    (stream-map (lambda (x) (list (stream-car s) x))
+                (stream-cdr t))
+    (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
+    weight)))
+
+;  a
+(define pa
+  (weighted-pairs integers integers
+                  (lambda (p) (+ (car p) (cadr p)))))
+;  b
+(define pb
+  (stream-filter
+   (lambda (p)
+     (let ((p1 (car p))
+           (p2 (cadr p)))
+       (or (= (modulo p1 2) 0)
+           (= (modulo p1 3) 0)
+           (= (modulo p1 5) 0)
+           (= (modulo p2 2) 0)
+           (= (modulo p2 3) 0)
+           (= (modulo p2 5) 0))))
+   (weighted-pairs integers
+                   integers
+                   (lambda (p)
+                     (+ (* 2 (car p))
+                        (* 3 (cadr p))
+                        (* 5 (car p) (cadr p)))))))
+
+;; Exercise 3.71
+(define (cube-sum p)
+  (+ (expt (car p) 3)
+     (expt (cadr p) 3)))
+
+(define cube-sum-stream
+  (weighted-pairs integers
+                  integers
+                  cube-sum))
+
+(define (dup s)
+  (if (equal? (stream-ref s 0)
+              (stream-ref s 1))
+      (cons-stream (stream-car s)
+                   (dup (stream-cdr s)))
+      (dup (stream-cdr s))))
+
+(define (uniq s)
+  (if (equal? (stream-ref s 0)
+              (stream-ref s 1))
+      (uniq (stream-cdr s))
+      (cons-stream (stream-car s)
+                   (uniq (stream-cdr s)))))
+
+(define ramanujan
+  (uniq (dup (stream-map cube-sum cube-sum-stream))))
+
+
+;; Exercise 3.72
+;  Admit.
+
