@@ -665,3 +665,39 @@
 ;; Exercise 3.72
 ;  Admit.
 
+
+;; Exercise 3.73
+(define (RC r c dt)
+  (lambda (i v0)
+    (add-stream
+     (scale-stream (integral i (* c v0) dt) (/ 1 c))
+     (scale-stream i r))))
+
+
+;; Exercise 3.74
+(define (sign-change-detector this last)
+  (cond
+    ((and (>= last 0) (< this 0)) -1)
+    ((and (< last 0) (>= this 0)) 1)
+    (else 0)))
+(define (zero-crossings sense-data)
+  (stream-map sign-change-detector sense-data (cons-stream 0 sense-data)))
+
+
+;; Exercise 3.75
+(define (make-zero-crossings input-stream last-value last-av)
+  (let ((avpt (/ (+ (stream-car input-stream) last-value) 2)))
+    (cons-stream (sign-change-detector avpt last-av)
+                 (make-zero-crossings (stream-cdr input-stream)
+                                      (stream-car input-stream)
+                                      avpt))))
+
+
+;; Exercise 3.76
+(define (smooth input-stream last-value)
+  (cons-stream
+   (/ (+ (stream-car input-stream) last-value) 2)
+   (smooth (stream-cdr input-stream)
+           (stream-car input-stream))))
+
+
