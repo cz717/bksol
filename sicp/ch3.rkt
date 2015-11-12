@@ -701,3 +701,45 @@
            (stream-car input-stream))))
 
 
+;; Exercise 3.77
+;  Admit.
+
+
+;; Exercise 3.78
+(define (solve-2nd dy0 y0 dt)
+  (define y (integral (delay dy) y0 dt))
+  (define dy (integral (delay ddy) dy0 dt))
+  (define ddy (add-stream
+               (scale-stream dy a)
+               (scale-stream y b)))
+  y)
+
+
+;; Exercise 3.79
+;  Admit.
+
+
+;; Exercise 3.80
+;  Admit.
+
+
+;; Exercise 3.81
+(define (random requst-stream)
+  (define random-numbers
+    (cons-stream random-init
+                 (stream-map
+                  (lambda (last requst)
+                    (cond
+                      ((equal? requst 'generate)
+                       (rand-update last))
+                      ((equal? requst 'reset)
+                       random-init)))
+                  random-numbers
+                  requst-stream)))
+  random-numbers)
+  
+  
+
+
+;; Exercise 3.82
+;  Admit.
