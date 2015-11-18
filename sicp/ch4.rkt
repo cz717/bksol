@@ -33,13 +33,13 @@
 
 (define (eval-and items env)
   (cond
-    ((null? items) #t)
+    ((null? items) 'true)
     (else
      (let ((first (car items))
            (rest (cdr items)))
        (if (true? (eval first))
            (eval-and rest env)
-           #f)))))
+           'false)))))
 
 (define (or? exp)
   (tagged-list? exp 'or))
@@ -48,12 +48,12 @@
 
 (define (eval-and items env)
   (cond
-    ((null? items) #f)
+    ((null? items) 'false)
     (else
      (let ((first (car items))
            (rest (cdr items)))
        (if (true? (eval first))
-           #t
+           'true
            (eval-and rest env))))))
 
 ;  and or as derived expressions
@@ -128,5 +128,71 @@
   (cons 'let
         (cons (list bind)
               body)))
-                   
 
+
+
+;; Exercise 4.8
+(define (named-let? exp)
+  (variable? (cadr exp)))
+
+
+;; Exercise 4.9
+;  Abort.
+
+
+;; Exercise 4.10 - 4.13
+;  Admit.
+
+
+;; Exercise 4.14
+;  Abort.
+
+
+;; Exercise 4.15
+;  Admit.
+
+
+;; Exercise 4.16
+;  a
+;  Admit.
+;  b
+(define (scan-out-defines body)
+  (define (pick p body)
+    (cond
+      ((null? body) '())
+      ((p (car body))
+       (cons (car body) (pick p (cdr body))))
+      (else
+       (pick p (cdr body)))))
+  (let ((definitions (pick definition? body))
+        (rest (pick (lambda (exp) (not (definition? exp)))
+                    body)))
+    (append (list 'let
+                  (map (lambda (def)
+                         (list (definition-variable def) ''*unasigned*))
+                       definitions))
+            (append (map (lambda (def)
+                           (list 'set (definition-variable def) (definition-value def)))
+                         definitions)
+                    rest))))
+;  c
+;  Admit.
+
+
+;; Exercise 4.17 - 4.20
+;  Admit.
+
+
+
+;; Exercise 4.21
+(define (f x)
+  ((lambda (even? odd?)
+     (even? even? odd? x))
+   (lambda (ev? od? n)
+     (if (= n 0)
+         #t
+         (od? ev? od? (- n 1))))
+   (lambda (ev? od? n)
+     (if (= n 0)
+         #f
+         (ev? ev? od? (- n 1))))))
