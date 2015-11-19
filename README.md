@@ -1,5 +1,10 @@
 # bksol
 
+[cipl]  
+John C. Mitchell. 
+*Concepts in Programming Languages.* 
+Cambridge University Press. 2002.
+
 [sicp]  
 Harold Abelson, Gerald Jay Sussman and Julie Sussman. 
 [*Structure and Interpretation of Computer Programs, 2nd*.](https://mitpress.mit.edu/sicp/) 

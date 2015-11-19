@@ -1,0 +1,48 @@
+\chapter{Lisp: Functions, Recursion, and Lists}
+
+
+\section{Cons Cell Representations}
+\begin{enumerate}
+  \item
+    Admit.
+
+  \item
+    \begin{verbatim}
+(cons (cons 'A
+            (cons 'B 'C))
+      (cons 'B 'C))
+    \end{verbatim}
+
+  \item
+    \begin{verbatim}
+((lambda (x)
+   (cons (cons 'A x)
+         x))
+ (cons 'B 'C))
+    \end{verbatim}
+\end{enumerate}
+
+
+\section{Conditional Expressions in Lisp}
+\begin{enumerate}
+  \item
+    Impossible. If it is possible, then we can write a function \texttt{halt?}.
+    \begin{verbatim}
+(define (halt? p a)
+  (cond
+    (((lambda (x) #t) (p a)) #t)
+    (#t #f)))
+    \end{verbatim}
+
+  \item
+    NFA.
+
+  \item
+    \begin{verbatim}
+(define (odd x)
+  (cond (((= x 0) nil)
+         ((= x 1) #t)
+         ((> x 1) (odd (- x 2)))
+         (else (odd (+ x 2))))))
+    \end{verbatim}
+\end{enumerate}

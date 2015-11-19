@@ -1,0 +1,20 @@
+# racket
+*.bak
+*.[1-9]
+
+# LaTeX
+*.sty
+*.dtx
+*.ins
+*.dvi
+*.log
+*.toc
+*.lof
+*.lot
+*.aux
+*.idx
+*.tex.bak
+*.tex.sav
+*.synctex.gz
+*.pdf
+
