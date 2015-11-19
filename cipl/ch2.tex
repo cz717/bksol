@@ -2,3 +2,30 @@
 
 \renewcommand{\theenumi}{(\alph{enumi})}
 
+\section{Partial and Total Functions}
+\begin{enumerate}
+  \item
+  $ \{ \langle x, x*5 \rangle | x > 1\} $ \\
+  It is defined on all integers greater than 1 and 
+  undefined on integers less than or equal to 1.
+  
+  \item 
+  $ \{ \langle x, 1 \rangle | x \in Z \} $ \\
+  It is defined on all integers.
+  
+  \item 
+  $ \{ \langle x, 1 \rangle | x \ge 0 and x is even \} $ \\
+  It is defined on all positive even integers.
+\end{enumerate}
+
+
+\section{Halting Problem on No Input}
+Possible. The \texttt{Halt} first transform the P into a program 
+read no input, by adding an assignment in front of the body of P, 
+which assign the argument to parameter. Then it call the 
+${\mathtt{Halt}}_{\phi}$.
+
+
+\section{Halting Problem on All Input}
+\verb+(define (halt? p a)+ \\
+\verb+  (+ ${\mathtt{Halt}}_{\forall}$ \verb+(lambda (x) (p a))))+

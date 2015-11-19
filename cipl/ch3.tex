@@ -7,19 +7,19 @@
     Admit.
 
   \item
-    \begin{verbatim}
+\begin{verbatim}
 (cons (cons 'A
             (cons 'B 'C))
       (cons 'B 'C))
-    \end{verbatim}
+\end{verbatim}
 
   \item
-    \begin{verbatim}
+\begin{verbatim}
 ((lambda (x)
    (cons (cons 'A x)
          x))
  (cons 'B 'C))
-    \end{verbatim}
+\end{verbatim}
 \end{enumerate}
 
 
@@ -27,22 +27,79 @@
 \begin{enumerate}
   \item
     Impossible. If it is possible, then we can write a function \texttt{halt?}.
-    \begin{verbatim}
+\begin{verbatim}
 (define (halt? p a)
   (cond
     (((lambda (x) #t) (p a)) #t)
     (#t #f)))
-    \end{verbatim}
+\end{verbatim}
 
   \item
     NFA.
 
   \item
-    \begin{verbatim}
+\begin{verbatim}
 (define (odd x)
   (cond (((= x 0) nil)
          ((= x 1) #t)
          ((> x 1) (odd (- x 2)))
          (else (odd (+ x 2))))))
-    \end{verbatim}
+\end{verbatim}
 \end{enumerate}
+
+
+\section{Detecting Errors}
+Abort.
+
+\section{Lisp and Higher-Order Functions}
+\begin{enumerate}
+  \item
+\begin{verbatim}
+(define compose2
+  (lambda (g h)
+    (lambda (f xs)
+      (g (lambda (xs) (f (h xs))) xs))))
+\end{verbatim}
+
+  \item
+    \texttt{maplist} \\
+    \texttt{car}
+
+  \item
+    \texttt{(compose f h)}
+\end{enumerate}
+
+
+\section{Definition of Garbage}
+\begin{enumerate}
+  \item Unnecessary. It may be accessible, but will never be used.
+  \item Yes.
+  \item Impossible. 
+\end{enumerate}
+
+
+\section{Reference Counting}
+\begin{enumerate}
+  \item All.
+  \item
+\begin{verbatim}
+((lambda (p)
+   (set-car! p p)
+   (set-cdr! p p))
+ (cons 'a 'b))
+\end{verbatim}
+    There is no pointer point to it, except its address and  decrement.
+\end{enumerate}
+
+
+\section{Regions and Memory Management}
+Abort.
+
+\section{Concurrency in Lisp}
+\begin{enumerate}
+  \item O(n).
+  \item Abort.
+  \item Abort.
+  \item Abort.
+\end{enumerate}
+  
