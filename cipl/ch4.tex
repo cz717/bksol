@@ -14,18 +14,19 @@ $(\lambda x.xy)$
 
 \section{Symbolic Evaluation}
 \begin{enumerate}
-  \item Left reduce: \\
+  \item Normal order: \\
   \begin{tabular}{rl}
       & $((\lambda f.\lambda g.f(g(1)))(\lambda x.x+4))(\lambda y.3-y)$ \\
     = & $(\lambda g.((\lambda x.x+4)(g\ 1)))(\lambda y.3-y) $ \\
-    = & $(\lambda x.x+4)((\lambda y.3-y)\ 1)$ \\
+    = & $(\lambda g.((g\ 1)+4))(\lambda y.3-y) $ \\
     = & $((\lambda y.3-y)\ 1)+4$ \\
     = & $(3-1)+4$ \\
   \end{tabular}
-  
-  \item Right reduce: \\
+
+  \item Applicative order: \\
   \begin{tabular}{rl}
-      & \ldots \\
+      & $((\lambda f.\lambda g.f(g(1)))(\lambda x.x+4))(\lambda y.3-y)$ \\
+    = & $(\lambda g.((\lambda x.x+4)(g\ 1)))(\lambda y.3-y) $ \\
     = & $(\lambda x.x+4)((\lambda y.3-y)\ 1)$ \\
     = & $(\lambda x.x+4)(3-1)$ \\
     = & $(3-1)+4$ \\
@@ -64,6 +65,46 @@ Admit.
     = & $ modify(s_{1}, x, 1+1) $ \\
   \end{tabular} \\
   where $ s_{1} = modify(s_{0}, x, 1) $.
-  
+
   \item Admit.
+\end{enumerate}
+
+
+\section{Semantics of Initialize-Before-Use}
+\begin{enumerate}
+  \item \ \\
+  \begin{tabular}{rl}
+    & $ C[[x:=0;y:=0;if\ x=y\ then\ z:=0\ else\ w:=1]](s_{0}) $ \\
+    = & $ C[[y:=0;if\ x=y\ then\ z:=0\ else\ w:=1]](C[[x:=0]](s_{0})) $ \\
+    = & $ C[[y:=0;if\ x=y\ then\ z:=0\ else\ w:=1]](s_{1}) $ \\
+    = & $ C[[if\ x=y\ then\ z:=0\ else\ w:=1]](C[[y:=0]](s_{1})) $ \\
+    = & $ C[[if\ x=y\ then\ z:=0\ else\ w:=1]](s_{2}) $ \\
+    = & $ if\ E[[x=y]](s_{2})\ then\ C[[z:=0]](s_{2})\ else\ C[[w:=1]](s_{2}) $ \\
+    = & $ C[[z:=0]](s_{2}) $ \\
+    = & $ if\ E[[0]](s_{2})=OK\ then\ modify(s_{2},z,init)\ else\ error $ \\
+    = & $ modify(s_{2}, z, init) $ \\
+  \end{tabular} \\
+  
+  \item \ \\
+  \begin{tabular}{rl}
+      & $ C[[if\ x=y\ then\ z:=y\ else\ z:=w]](s) $ \\
+    = & $ if\ E[[x=y]]\ then\ C[[z:=y]](s)\ else\ C[[z:=w]](s) $ \\
+    = & $ \ldots \ else\ if\ E[[w]]=OK\ then C[[z:=w]](s)\ else\ error $ \\
+    = & $ \ldots \ else\ error $ \\
+  \end{tabular}
+  
+\end{enumerate}
+
+
+\section{Semantics of Type Checking}
+Admit.
+
+
+\section{Lazy Evaluation and Parallelism}
+\begin{enumerate}
+  \item Yes. While evaluating \texttt{g}, if we need the value of $\mathtt{e_{1}}$,
+    which is not compeleted, we must wait.
+  \item Admit.
+  \item Admit.
+  \item No.
 \end{enumerate}
