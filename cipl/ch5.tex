@@ -12,3 +12,85 @@ integer procedure Q(x)
 
 \section{Algol 60 Pass-By-Name}
 2, 2, 2
+
+
+\section{Nonlinear Pattern Matching}
+\begin{enumerate}
+  \item
+\begin{verbatim}
+  fun f(x, y) =
+    if y = 0 then x
+    else if  = 0 then y
+         else x + y;
+\end{verbatim}
+  
+  \item No.
+  
+  \item 
+\begin{verbatim}
+  fun eq(x, y) = 
+    if x = y then true else false;
+\end{verbatim}
+  
+  \item Admit.
+\end{enumerate}
+
+
+\section{ML Map for Trees}
+\begin{enumerate}
+  \item 
+\begin{verbatim}
+  fun map(f, LEAF n) = LEAF (f n)
+    | map(f, NODE(l,r)) = NODE(map(f, l), map(f, r));
+\end{verbatim}
+  
+  \item
+\begin{verbatim}
+  val ('a, 'b)map = fn :  ('a -> 'b) * 'a tree -> 'b tree
+\end{verbatim}
+\end{enumerate}
+
+
+\section{ML Reduce for Trees}
+\begin{verbatim}
+  fun reduce(f, LEAF n) = n
+    | reduce(f, NODE(l, r)) = f(reduce(f, l), reduce(f, r));
+\end{verbatim}
+
+
+\section{Currying}
+\begin{enumerate}
+  \item
+\begin{verbatim}
+  fun Curry(f) =
+    fn(a) => (fn(b) => f(a, b));
+    
+  fun Uncurry(f) =
+    fn(a, b) => f a b;
+\end{verbatim}
+
+  \item Admit.
+\end{enumerate}
+
+
+\section{Disjoint Unions}
+Admit.
+
+
+\section{Lazy Evaluation and Functions}
+\begin{enumerate}
+  \item 
+\begin{verbatim}
+  fun merge(Nil, y) = y
+    | merge(x, Nil) = x
+    | merge(Cons(a, fa), Cons(b, fb)) = 
+        Cons(a, fn() => Cons(b, fn() => merge(fa(), fb())));
+\end{verbatim}
+  
+  \item Abort.
+  \item Abort.
+\end{enumerate}
+
+
+
+
