@@ -267,7 +267,7 @@
 ;  Admit.
 
 
-;; Exercise 4.4
+;; Exercise 4.42
 (define (xor p q)
   (not (eq? p q)))
 
@@ -292,8 +292,27 @@
           (list 'joan joan)
           (list 'kitty kitty)
           (list 'mary mary))))
-             
 
 
-;; Exercise 4.43 - 4.44
+;; Exercise 4.43 - 4.46
 ;  Admit.
+
+
+;; Exercise 4.47
+;  Yes. No.
+
+
+;; Exercise 4.48
+;  Admit.
+
+
+;; Exercise 4.49
+(define (parse-word word-list)
+  (define (gene wl)
+    (cond ((null? wl) (amb))
+          (else (amb (car wl) (gene (cdr wl))))))
+  (let ((gene-word (gene wl)))
+    (list (car word-list) gene-word)))
+
+
+
