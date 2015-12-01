@@ -1,0 +1,96 @@
+\chapter{Type Systems and Type Inference}
+
+\section{ML Types}
+Admit.
+
+
+\section{Polymorphic Sorting}
+\begin{verbatim}
+val 'a sort = fn : ('a * 'a -> bool) * 'a list -> 'a list
+val 'a insert = fn : 'a * 'a list -> 'a list
+\end{verbatim}
+
+
+\section{Types and Garbage Collection}
+Admit.
+
+
+\section{Polymorphic Fixed Point}
+\begin{enumerate}
+  \item
+\begin{verbatim}
+val F = fn : (int -> int) -> int -> int
+\end{verbatim}
+
+  \item 
+\begin{verbatim}
+val ('a, 'b) Y = fn : (('a -> 'b) -> 'a -> 'b) -> 'a -> 'b
+\end{verbatim}
+\end{enumerate}
+
+
+\section{Parse Graph}
+\begin{verbatim}
+val 'a f = fn : ('a -> int) -> 'a -> int
+\end{verbatim}
+
+
+\section{Parse Graph}
+Admit.
+
+
+\section{Type Inference and Bugs}
+\begin{verbatim}
+val ('a, 'b) append = fn : 'a list * 'b -> 'b
+\end{verbatim}
+
+
+\section{Type Inference and Debugging}
+Admit.
+
+
+\section{ Polymorphism in C}
+\begin{verbatim}
+var 'a min = fn : 'a list -> int -> ('a * 'a -> bool) -> 'a
+\end{verbatim}
+
+
+\section{Typing and Run-Time Behavior}
+Abort.
+
+
+\section{Dynamic Typing in ML}
+
+\begin{enumerate}
+  \item 
+\begin{verbatim}
+fun atom(Nil) = Symbol "T"
+  | atom(Symbol s) = Symbol "T"
+  | atom(Number n) = Symbol "T"
+  | atom(Cons(a, d)) = Nil
+  | atom(Function(f, t)) = Symbol "T";
+\end{verbatim}
+  
+  \item
+\begin{verbatim}
+fun list(Nil) = Symbol "T"
+  | list(Symbol s) = Nil
+  | list(Number n) = Nil
+  | list(Cons(a, d)) = list(d)
+  | list(Function(f, t)) = Nil;
+\end{verbatim}
+  
+  \item 
+\begin{verbatim}
+exception NotPair;
+fun car(Cons(a, d)) = a
+  | car(x) = raise NotPair;
+\end{verbatim}
+  
+  \item
+\begin{verbatim}
+fun f(x) = Cons(x, Symbol("A"));
+\end{verbatim}
+\end{enumerate}
+
+
