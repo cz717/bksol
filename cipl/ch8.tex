@@ -1,0 +1,60 @@
+\chapter{Control in Sequential Languages}
+
+\section{Exceptions}
+\begin{enumerate}
+  \item 0. \texttt{(pred 0)} raised \texttt{Excpt(0)}.
+  \item 1. \texttt{(dumb)} raised \texttt{Excpt(1)}.
+  \item 1. \texttt{(pred 0)} raised \texttt{Excpt(0)}.
+\end{enumerate}
+
+
+\section{Exceptions}
+Admit.
+
+
+\section{Exceptions}
+Admit.
+
+
+\section{Exceptions and Recursion}
+\begin{verbatim}
+call f(5)
+call f(3)
+call f(1) raise Odd
+pop f(1)
+pop f(3)
+handle Odd
+f(5) return ~3
+f(7) return ~3
+...
+\end{verbatim} 
+
+
+\section{Tail Recursion and Exception Handling}
+\begin{verbatim}
+exception OddNum;
+let fun f(0,count) = count
+      | f(1, count) = -1
+      | f(x, count) = f(x-2, count+1)
+\end{verbatim}
+
+
+\section{Evaluation Order and Exceptions}
+\begin{verbatim}
+f((raise E(0)), (raise E(1))) handle E(x) => x
+\end{verbatim}
+
+
+\section{Control Flow and Memory Management}
+Admit.
+
+
+\section{Tail Recursion and Continuations}
+Admit.
+
+
+\section{Continuations}
+Admit.
+
+
+
