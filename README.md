@@ -1,8 +1,13 @@
 # bksol
 
+[ccl]  
+Martin Davis, Ron Sigal, Elaine J. Weyuker. 
+*Computability, Complexity, and Languages, 2nd*. 
+Morgan Kaufmann. 1994.  
+
 [cipl]  
 John C. Mitchell. 
-*Concepts in Programming Languages.* 
+*Concepts in Programming Languages*. 
 Cambridge University Press. 2002.
 
 [sicp]  
