@@ -1,0 +1,111 @@
+\chapter{Programs and Computable Functions}
+
+
+\section{A Programming Language}
+No exercise.
+
+
+\section{Some Examples of Programs}
+
+\subsection{}
+\begin{center}
+\begin{tabular}{l}
+  $ Z \gets Z + 1 $ \\
+  $ Z \gets Z + 1 $ \\
+  $ Z \gets Z + 1 $ \\
+  $ Y \gets X \cdot Z $ \\
+\end{tabular}
+\end{center}
+
+\subsection{}
+Admit.
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+        & $ Z \gets X $ \\
+        & $ Y \gets Y + 1 $ \\
+  $[A]$ & IF $Z \neq 0$ GOTO $B$ \\
+        & GOTO $E$ \\
+  $[B]$ & $ Z \gets Z - 1 $ \\
+        & IF $Z \neq 0$ GOTO $C$ \\
+        & $ Y \gets Y - 1 $ \\
+        & GOTO $E$ \\
+  $[C]$ & $ Z \gets Z - 1 $ \\
+        & IF $X \neq 0$ GOTO $A$ \\
+\end{tabular}
+\end{center}
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+        & $ Z \gets X $ \\
+        & $ Y \gets Y + 1 $ \\
+  $[A]$ & IF $Z \neq 0$ GOTO $B$ \\
+        & GOTO $E$ \\
+  $[B]$ & $ Z \gets Z - 1 $ \\
+        & IF $Z \neq 0$ GOTO $C$ \\
+        & GOTO $B$ \\
+  $[C]$ & $ Z \gets Z - 1 $ \\
+        & IF $X \neq 0$ GOTO $A$ \\
+\end{tabular}
+\end{center}
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+  $[A]$ & IF $X_{1} \neq 0$ GOTO $B$ \\
+        & IF $X_{2} \neq 0$ GOTO $E$ \\
+        & $ Y \gets Y + 1 $ \\
+        & GOTO $E$ \\
+  $[B]$ & IF $X_{2} \neq 0$ GOTO $C$ \\
+        & GOTO $E$ \\
+  $[C]$ & $ X_{1} \gets X_{1} - 1 $ \\
+        & $ X_{2} \gets X_{2} - 1 $ \\
+        & GOTO $A$ \\
+\end{tabular}
+\end{center}
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+  $[A]$ & $ Y \gets Y + 1 $ \\
+        & $ Z_{1} \gets Y $ \\
+        & $ Z_{2} \gets Y $ \\
+        & $ Z_{3} \gets Z_{1} \cdot Z_{2} $ \\
+        & $ Z_{4} \gets X $ \\
+  $[B]$ & IF $Z_{3} \neq 0$ GOTO $C$ \\
+        & GOTO $A$ \\
+  $[C]$ & IF $Z_{4} \neq 0$ GOTO $D$ \\
+        & $ Y \gets Y - 1 $ \\
+        & GOTO $E$ \\
+  $[D]$ & $ Z_{3} \gets Z_{3} - 1 $ \\
+        & $ Z_{4} \gets Z_{4} - 1 $ \\
+        & GOTO $B$ \\
+\end{tabular}
+\end{center}
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+            & $ Z_{1} \gets X_{1} $ \\
+            & $ Z_{2} \gets X_{2} $ \\
+  $[A_{1}]$ & IF $X_{1} \neq 0$ GOTO $A_{2}$ \\
+            & $ Y \gets X_{2} $ \\
+            & GOTO $E$ \\
+  $[A_{2}]$ & IF $X_{2} \neq 0$ GOTO $B$ \\
+            & $ Y \gets X_{1} $ \\
+            & GOTO $E$ \\
+  $[B]$     & $ X_{1} \gets X_{1} - 1 $ \\
+            & $ X_{2} \gets X_{2} - 1 $ \\
+            & GOTO $C_{1}$ \\
+  $[C_{1}]$ & IF $X_{1} \neq 0$ GOTO $C_{2}$ \\
+            & $ X_{1} \gets Z_{1} $ \\
+            & $ Z_{2} \gets X_{2} $ \\
+            & GOTO $A_{1}$ \\
+  $[C_{2}]$ & IF $X_{2} \neq 0$ GOTO $B$ \\
+            & $ X_{2} \gets Z_{1} $ \\
+            & $ Z_{1} \gets X_{1} $ \\
+            & GOTO $A_{1}$ \\
+\end{tabular}
+\end{center}
