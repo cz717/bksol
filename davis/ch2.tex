@@ -151,3 +151,43 @@ $ \psi_{\mathscr{P}}^{(1)}(x) $ is undefined for all $x$.
 \begin{displaymath}
 \psi_{\mathscr{P}}^{(1)}(x) = 0
 \end{displaymath}
+
+\subsection{}
+\[ \psi_{\mathscr{P}}^{(1)}(r_{1}) = r_{1} \]
+\[ \psi_{\mathscr{P}}^{(2)}(r_{1},r_{2}) = \left\{
+   \begin{array}{ll}
+     r_{1}        & \mathrm{if}\ r_{2} = 0 \\
+     r_{1}+2r_{2} & \mathrm{else} \\
+   \end{array}
+   \right. 
+\]
+\[ \psi_{\mathscr{P}}^{(2)}(r_{1},r_{2},r_{3}) = \left\{
+   \begin{array}{ll}
+     r_{1}        & \mathrm{if}\ r_{2} = 0 \\
+     r_{1}+2r_{2} & \mathrm{else} \\
+   \end{array}
+   \right. 
+\]
+
+\subsection{}
+Since $f$ is a partially computable function, there must be an program 
+$\mathscr{P}$ that compute $f$. Suppose the length of $\mathscr{P}$ is 
+$m$, then by substituting the subscript of local variables or label all 
+at once, we can obtain a variant that do the same things, without changing 
+the length. There are infinitely many variant because we have infinite 
+local variables and labels.
+
+\subsection{}
+\begin{enumerate}
+\item 
+Program contains $k$ same instructions \[ Y \gets Y + 1 \] followed by 
+\[ \mathrm{GOTO}\ E \] computes $f_{k}$.
+
+\item Admit.
+\item Admit.
+
+\item
+Suppose a straightline program $\mathscr{P}$ computes the function 
+$ f(x) = x + 1 $, whose length is $k$. Then $ \psi_{\mathscr{P}}^{(1)}(k) = k+1 $, 
+which is contradict to (b).
+\end{enumerate}
