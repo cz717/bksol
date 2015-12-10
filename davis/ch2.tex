@@ -18,8 +18,10 @@ No exercise.
 \end{tabular}
 \end{center}
 
+
 \subsection{}
 Admit.
+
 
 \subsection{}
 \begin{center}
@@ -37,6 +39,7 @@ Admit.
 \end{tabular}
 \end{center}
 
+
 \subsection{}
 \begin{center}
 \begin{tabular}{ll}
@@ -52,6 +55,7 @@ Admit.
 \end{tabular}
 \end{center}
 
+
 \subsection{}
 \begin{center}
 \begin{tabular}{ll}
@@ -66,6 +70,7 @@ Admit.
         & GOTO $A$ \\
 \end{tabular}
 \end{center}
+
 
 \subsection{}
 \begin{center}
@@ -85,6 +90,7 @@ Admit.
         & GOTO $B$ \\
 \end{tabular}
 \end{center}
+
 
 \subsection{}
 \begin{center}
@@ -113,13 +119,16 @@ Admit.
 
 
 
+
 \section{Snytax}
 
 \subsection{}
 Admit.
 
+
 \subsection{}
 Admit.
+
 
 \subsection{}
 \begin{center}
@@ -132,10 +141,12 @@ This program does not work for n = 0.
 
 
 
+
 \section{Computable Functions}
 
 \subsection{}
 $ \psi_{\mathscr{P}}^{(1)}(x) $ is undefined for all $x$.
+
 
 \subsection{}
 \begin{displaymath}
@@ -147,10 +158,12 @@ $ \psi_{\mathscr{P}}^{(1)}(x) $ is undefined for all $x$.
 \right.
 \end{displaymath}
 
+
 \subsection{}
 \begin{displaymath}
 \psi_{\mathscr{P}}^{(1)}(x) = 0
 \end{displaymath}
+
 
 \subsection{}
 \[ \psi_{\mathscr{P}}^{(1)}(r_{1}) = r_{1} \]
@@ -159,35 +172,158 @@ $ \psi_{\mathscr{P}}^{(1)}(x) $ is undefined for all $x$.
      r_{1}        & \mathrm{if}\ r_{2} = 0 \\
      r_{1}+2r_{2} & \mathrm{else} \\
    \end{array}
-   \right. 
+   \right.
 \]
 \[ \psi_{\mathscr{P}}^{(2)}(r_{1},r_{2},r_{3}) = \left\{
    \begin{array}{ll}
      r_{1}        & \mathrm{if}\ r_{2} = 0 \\
      r_{1}+2r_{2} & \mathrm{else} \\
    \end{array}
-   \right. 
+   \right.
 \]
 
+
 \subsection{}
-Since $f$ is a partially computable function, there must be an program 
-$\mathscr{P}$ that compute $f$. Suppose the length of $\mathscr{P}$ is 
-$m$, then by substituting the subscript of local variables or label all 
-at once, we can obtain a variant that do the same things, without changing 
-the length. There are infinitely many variant because we have infinite 
+Since $f$ is a partially computable function, there must be an program
+$\mathscr{P}$ that compute $f$. Suppose the length of $\mathscr{P}$ is
+$m$, then by substituting the subscript of local variables or label all
+at once, we can obtain a variant that do the same things, without changing
+the length. There are infinitely many variant because we have infinite
 local variables and labels.
+
 
 \subsection{}
 \begin{enumerate}
-\item 
-Program contains $k$ same instructions \[ Y \gets Y + 1 \] followed by 
+\item
+Program contains $k$ same instructions \[ Y \gets Y + 1 \] followed by
 \[ \mathrm{GOTO}\ E \] computes $f_{k}$.
 
 \item Admit.
 \item Admit.
 
 \item
-Suppose a straightline program $\mathscr{P}$ computes the function 
-$ f(x) = x + 1 $, whose length is $k$. Then $ \psi_{\mathscr{P}}^{(1)}(k) = k+1 $, 
+Suppose a straightline program $\mathscr{P}$ computes the function
+$ f(x) = x + 1 $, whose length is $k$. Then $ \psi_{\mathscr{P}}^{(1)}(k) = k+1 $,
 which is contradict to (b).
+\end{enumerate}
+
+
+\subsection{}
+Abort.
+
+\subsection{}
+Admit.
+
+
+
+\section{More about Macros}
+
+\subsection{}
+Admit.
+
+\subsection{}
+Admit.
+
+\subsection{}
+\begin{center}
+\begin{tabular}{l}
+  $ Z \gets g(X) $ \\
+  $ Y \gets f(Z) $ \\
+\end{tabular}
+\end{center}
+
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+        & $ Z_{1} \gets X_{1} $ \\
+        & $ Z_{2} \gets X_{2} $ \\
+  $[A]$ & IF $Z_{1} \neq 0$ GOTO $B$ \\
+        & $ Y \gets Y + 1 $ \\
+        & GOTO $E$ \\
+  $[B]$ & IF $Z_{2} \neq 0$ GOTO $C$ \\
+        & GOTO $E$ \\
+  $[C]$ & $ Z_{1} \gets Z_{1} - 1 $ \\
+        & $ Z_{2} \gets Z_{2} - 1 $ \\
+        & GOTO $A$ \\
+\end{tabular}
+\end{center}
+
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+        & $ Y \gets X_{1} + X_{2} $ \\
+  $[A]$ & IF $ P (Y) $ GOTO $E$ \\
+        & GOTO $A$ \\
+\end{tabular}
+\end{center}
+
+
+\subsection{}
+\begin{center}
+\begin{tabular}{ll}
+  $[A]$ & IF $ P (Z) $ GOTO $C$ \\
+  $[B]$ & $ Z \gets Z + 1 $ \\
+        & GOTO $A$ \\
+  $[C]$ & $ X \gets X - 1 $ \\
+        & IF $ X \neq 0 $ GOTO $B$ \\
+        & $ Y \gets Y + 1 $  \\
+        & GOTO $E$ \\
+\end{tabular}
+\end{center}
+
+
+\subsection{}
+Firstly show the predicate $ x_{1} = x_{2} $ is computable:
+\begin{center}
+\begin{tabular}{ll}
+        & IF $ X_{1} \le X_{2} $ GOTO $A$ \\
+        & GOTO $E$ \\
+  $[A]$ & IF $ X_{2} \le X_{1} $ GOTO $B$ \\
+        & GOTO $E$ \\
+  $[B]$ & $ Y \gets Y + 1 $ \\
+        & GOTO $E$ \\
+\end{tabular}
+\end{center}
+Then $\pi^{-1}$ is computed by following program:
+\begin{center}
+\begin{tabular}{ll}
+  $[A]$ & $ Z \gets \pi(Y)$ \\
+        & IF $ X = Z $ GOTO $E$ \\
+        & $ Y \gets Y + 1 $ \\
+        & GOTO $A$ \\
+\end{tabular}
+\end{center}
+
+
+\subsection{}
+Admit.
+
+\subsection{}
+Admit.
+
+
+\subsection{}
+In $\mathscr{S}'$ we also have $ V \gets V + 1$, and by using macro we can 
+simulate other 2 forms of instruction.
+\begin{enumerate}
+\item 
+find a unused variable $ Z_{m} $ (which initially has the value 0),
+then IF $ V \neq Z_{m} $ GOTO $L$ is actually IF $ V \neq 0 $ GOTO $L$.
+
+\item 
+following program computes $ f(x) = x - 1 $:
+\begin{center}
+\begin{tabular}{ll}
+        & IF $ X \neq 0 $ GOTO $A$ \\
+        & GOTO $E$ \\
+  $[A]$ & $ Z \gets Z + 1 $ \\
+        & IF $ X \neq Z $ GOTO $B$ \\
+        & GOTO $E$ \\
+  $[B]$ & $ Y \gets Y + 1 $ \\
+        & GOTO $A$ \\
+\end{tabular}
+\end{center}
+
 \end{enumerate}
