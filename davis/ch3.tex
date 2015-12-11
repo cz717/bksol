@@ -1,0 +1,88 @@
+\chapter{Primitive Recursive Functions}
+
+\section{Composition}
+No exercise.
+
+
+\section{Recursion}
+No exercise.
+
+
+\section{PRC Classes}
+
+\subsection{}
+\[ h_{1}(x, y, z) = g_{1}(u^{3}_{3}(x, y, z), u^{3}_{2}(x, y, z), u^{3}_{1}(x, y, z)) \]
+\[ h_{2}(x) = g_{1}(u^{1}_{1}(x), u^{1}_{1}(x), u^{1}_{1}(x)) \]
+\[
+\begin{split}
+h_{3}(w, x, y, z) = h_{1}( & g_{3}(u^{4}_{1}(w, x, y, z), u^{4}_{3}(w, x, y, z)), \\
+                           & u^{4}_{4}(w, x, y, z), \\
+                           & g_{4}( s(s(n(u^{4}_{1}(w, x, y, z)))), g_{4}(u^{4}_{3}(w, x, y, z), u^{4}_{4}(w, x, y, z))))
+\end{split}
+\]
+
+
+\subsection{}
+Three initial functions are all total; functions obtained from total functions
+by either composition or recursion also total.
+
+\subsection{}
+Initial function $ u^{n+1}_{i}(\dots) $ does not belong to $ \mathscr{C} $.
+
+\subsection{}
+Admit.
+
+\subsection{}
+Admit.
+
+
+
+\section{Some Primitive Recursive Functions}
+
+\subsection{}
+Admit.
+
+\subsection{}
+\begin{align*}
+  f(0)   & = k \\
+  f(t+1) & = f(t)
+\end{align*}
+
+
+\subsection{}
+Admit.
+
+\subsection{}
+Admit.
+
+
+\subsection{}
+\begin{align*}
+  \iota_{f}(0, x)   & = u^{1}_{1}(x) \\
+  \iota_{f}(t+1, x) & = f(\iota_{f}(t, x))
+\end{align*}
+
+
+\subsection{}
+\begin{enumerate}
+  \item
+  \begin{align*}
+    E(0)   & = 0 \\
+    E(t+1) & = \alpha(E(t))
+  \end{align*}
+
+  \item
+  \begin{align*}
+    H(0)   & = 0 \\
+    H(t+1) & = H(t) + E(t)
+  \end{align*}
+\end{enumerate}
+
+
+\subsection{}
+\[\ f(x) = h(x, x) \]
+where $h(x,y)$ is primitive recursive :
+\begin{align*}
+  h(x, 0)   & = 1 \\
+  h(x, t+1) & = {h(x, t)}^{x} \\
+\end{align*}
