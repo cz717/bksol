@@ -86,3 +86,60 @@ where $h(x,y)$ is primitive recursive :
   h(x, 0)   & = 1 \\
   h(x, t+1) & = {h(x, t)}^{x} \\
 \end{align*}
+
+
+\subsection{}
+$ f(x+1) < x+1 $ for all $x$, particularly, $ f(1) < 1 $ then must have
+ $ f(1) = 0 $. So $ f'(x) = \min _{t\le x} f^{t}(x) = 0 $ is defined on 
+all $ x>0 $, and is computable:
+\begin{center}
+\begin{tabular}{ll}
+  $[A]$ & $ Z \gets f^{Y}(x) $ \\
+        & IF $Z = 0$ GOTO $E$ \\
+        & $ Y \gets Y + 1 $ \\
+        & GOTO $A$
+\end{tabular}
+\end{center}
+According to Exercise 5, $ g^{n}(x) = \iota_{g}(n, x) $ is computable.
+Then $h$ can be defined as:
+\begin{align*}
+  h(0)   & = k \\
+  h(t+1) & = g^{f'(t+1)}(k) \\
+\end{align*}
+
+
+\subsection{}
+\[ f(n, x) = g^{2^{n}}(x) = \iota_{g}(2^{n}, x) \]
+
+\subsection{}
+Admit.
+
+\subsection{}
+\begin{enumerate}
+  \item Admit.
+  
+  \item 
+  $ g(x_{1}, x_{2}) \le \max\{x_{1}, x_{2}\} + k $ for some $k$ according to (a).
+  When $ t = 0 $, 
+  \[ h(0) = c \le 0 \cdot k + c .\]
+  Suppose the result is known for $ t $:
+  \[ h(t) \le t \cdot k + c .\]
+  Then for $ t+1 $:
+  \begin{align*}
+    h(t+1) & = g(t, h(t)) \\
+           & \le \max\{t, h(t)\} + k \\
+           & \le \max\{t, t \cdot k + c\} + k \\
+  \end{align*}
+  Because $ t \le t \cdot k + c $ (since $k>0$), 
+  \[ h(t+1) \le (t+1)k+c \]
+
+  \item Similar to (b).
+  \item Admit.
+  \item Admit.
+\end{enumerate}
+
+
+
+\section{Primitive Recursive Predicates}
+
+
