@@ -90,7 +90,7 @@ where $h(x,y)$ is primitive recursive :
 
 \subsection{}
 $ f(x+1) < x+1 $ for all $x$, particularly, $ f(1) < 1 $ then must have
- $ f(1) = 0 $. So $ f'(x) = \min _{t\le x} f^{t}(x) = 0 $ is defined on 
+ $ f(1) = 0 $. So $ f'(x) = \min _{t\le x} f^{t}(x) = 0 $ is defined on
 all $ x>0 $, and is computable:
 \begin{center}
 \begin{tabular}{ll}
@@ -117,10 +117,10 @@ Admit.
 \subsection{}
 \begin{enumerate}
   \item Admit.
-  
-  \item 
+
+  \item
   $ g(x_{1}, x_{2}) \le \max\{x_{1}, x_{2}\} + k $ for some $k$ according to (a).
-  When $ t = 0 $, 
+  When $ t = 0 $,
   \[ h(0) = c \le 0 \cdot k + c .\]
   Suppose the result is known for $ t $:
   \[ h(t) \le t \cdot k + c .\]
@@ -130,7 +130,7 @@ Admit.
            & \le \max\{t, h(t)\} + k \\
            & \le \max\{t, t \cdot k + c\} + k \\
   \end{align*}
-  Because $ t \le t \cdot k + c $ (since $k>0$), 
+  Because $ t \le t \cdot k + c $ (since $k>0$),
   \[ h(t+1) \le (t+1)k+c \]
 
   \item Similar to (b).
@@ -142,4 +142,8 @@ Admit.
 
 \section{Primitive Recursive Predicates}
 
-
+\subsection{}
+If function $f(x_{1}, x_{2} \dots x_{n})$ belong to COMP, 
+either $f(x_{1}, x_{2} \dots x_{n}) = k$ for some constant $k$,
+or $f(x_{1}, x_{2} \dots x_{n}) = x_{i}+k$ for some $1\le i\le n$ and constant $k$.
+Since the latter can't be a predicate(whose value are 0 or 1), it must be the former.
