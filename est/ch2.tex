@@ -1,0 +1,96 @@
+\chapter{Axioms and Operations}
+
+\section{}
+The set of integers divisible by 180.
+
+
+\section{}
+$ \bigcup\{\{a\}, \{b\}\} = \bigcup\{\{a,b\}\} = \{a,b\} $.
+
+
+\section{}
+Let $ a \in A $, for every $ x \in a $, we have $ x \in \bigcup A $.
+Hence $ a \subseteq \bigcup A $.
+
+
+\section{}
+For every $ x \in \bigcup A $, there are some $a$ in $A$ that $ x \in a $.
+Since $ A \subseteq B $, $a$ also belongs to $B$. Namely, $x$ belongs to 
+some member of $B$, so $ x \in \bigcup B $.
+
+
+\section{}
+For every $ x \in \bigcup A $, there are some $a$ in $A$ that $ x \in a $.
+$ a \subseteq B $ according to assumption. So $ x \in B $.
+
+
+\section{}
+\begin{enumerate}
+  \item 
+  If $ x \in \bigcup\mathscr{P}A $, then $ x \in a $ where $ a \in \mathscr{P}A $ 
+  hence $ a \subseteq A $, so $ x \in A $. \\
+  $ x \in A \quad \Rightarrow \quad  \{x\} \subseteq A  \quad \Rightarrow \quad 
+   \{x\} \in \mathscr{P}A  \quad \Rightarrow \quad   x \in \bigcup\mathscr{P}A $.
+  
+  \item 
+  $ a \in A  \quad \Rightarrow \quad  a \subseteq \bigcup A 
+    \quad \Rightarrow \quad  a \in \mathscr{P}\bigcup A $.
+\end{enumerate}
+
+
+\section{}
+\begin{enumerate}
+  \item 
+  \[ \begin{array}{rl}
+  C \in \mathscr{P}A\bigcap\mathscr{P}B 
+  & \Rightarrow C \in \mathscr{P}A \ \&\ C \in \mathscr{P}B \\
+  & \Rightarrow C \subseteq A \ \&\ C \subseteq B \\
+  & \Rightarrow (\forall x \in C) x \in A \ \&\ x \in B  \\
+  & \Rightarrow (\forall x \in C) x \in A\bigcap B \\
+  & \Rightarrow C \subseteq A\bigcap B \\
+  & \Rightarrow C \in \mathscr{P}(A\bigcap B)
+  \end{array}\]
+  \[ \begin{array}{rl}
+  C \in \mathscr{P}(A\bigcap B)
+  & \Rightarrow C \subseteq A\bigcap B \\
+  & \Rightarrow (\forall x \in C) x \in A\bigcap B \\
+  & \Rightarrow (\forall x \in C) x \in A \ \&\ x \in B  \\
+  & \Rightarrow C \subseteq A \ \&\ C \subseteq B \\
+  & \Rightarrow C \in \mathscr{P}A \ \&\ C \in \mathscr{P}B \\
+  & \Rightarrow C \in \mathscr{P}A\bigcap\mathscr{P}B 
+  \end{array}\]
+
+  \item 
+  \[ \begin{array}{rl}
+  C \in \mathscr{P}A\bigcup\mathscr{P}B
+  & \Rightarrow C \in \mathscr{P}A \ \mathnormal{or}\ C \in \mathscr{P}B \\
+  & \Rightarrow C \subseteq A \ \mathnormal{or}\ C \subseteq B \\
+  & \Rightarrow (\forall x \in C) x \in A \ \mathnormal{or}\ x \in B  \\
+  & \Rightarrow (\forall x \in C) x \in A\bigcup B \\
+  & \Rightarrow C \subseteq A\bigcup B \\
+  & \Rightarrow C \in \mathscr{P}(A\bigcup B)
+  \end{array}\]
+\end{enumerate}
+
+
+\section{}
+For every set $A$, we can construct a singleton $ \{A\} $(that is, 
+$\{A,A\}$, according to Pairing Axiom),so if let $S$ be a set of all
+singleton, then $ \bigcup S $ is a set of all sets.
+
+
+\section{}
+$ a = \{x, y\} $ and $ B = \{\{x, y\}\} $, where $x$ and $y$ are distinct.
+
+
+\section{}
+\[ \begin{array}{rl}
+  a \in B
+  & \Rightarrow (\forall x \in \mathscr{P}a) x \subseteq a \\
+  & \Rightarrow (\forall x \in \mathscr{P}a)(\forall y \in x) y \in a \\
+  & \Rightarrow (\forall x \in \mathscr{P}a)(\forall y \in x) y \in \bigcup B \\
+  & \Rightarrow (\forall x \in \mathscr{P}a) x \subseteq \bigcup B \\
+  & \Rightarrow (\forall x \in \mathscr{P}a) x \in \mathscr{P}\bigcup B \\
+  & \Rightarrow \mathscr{P}a \subseteq \mathscr{P}\bigcup B \\
+  & \Rightarrow \mathscr{P}a \in \mathscr{PP}\bigcup B \\
+\end{array}\]
