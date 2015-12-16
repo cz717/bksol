@@ -11,6 +11,9 @@ Martin Davis, Ron Sigal, Elaine J. Weyuker.
 *Computability, Complexity, and Languages, 2nd*. 
 Morgan Kaufmann. 1994.  
 
+[est]  
+Herbert B. Enderton. *Elements of Set Theory*. Academic Press. 1977.
+
 [sicp]  
 Harold Abelson, Gerald Jay Sussman and Julie Sussman. 
 [*Structure and Interpretation of Computer Programs, 2nd*.](https://mitpress.mit.edu/sicp/) 
