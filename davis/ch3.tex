@@ -143,7 +143,64 @@ Admit.
 \section{Primitive Recursive Predicates}
 
 \subsection{}
-If function $f(x_{1}, x_{2} \dots x_{n})$ belong to COMP, 
+If function $f(x_{1}, x_{2} \dots x_{n})$ belong to COMP,
 either $f(x_{1}, x_{2} \dots x_{n}) = k$ for some constant $k$,
 or $f(x_{1}, x_{2} \dots x_{n}) = x_{i}+k$ for some $1\le i\le n$ and constant $k$.
 Since the latter can't be a predicate(whose value are 0 or 1), it must be the former.
+
+
+
+\section{Iterated Operations and Bounded Quantifiers}
+
+\subsection{}
+\[ P(x) = (\exists t)_{\le x}(t^{2}=x) \]
+
+\subsection{}
+\[ \sigma(x) = \prod_{t=0}^{x}{t\cdot(t|x)} \]
+
+\subsection{}
+\[ \pi(x) = \sum_{t=0}^{x}{Prime(t)} \]
+
+\subsection{}
+\[ SQSM(x) = (\exists v)_{\le x}\{ (\exists w)_{\le x}(v^2+w^2=x) \} \]
+
+\subsection{}
+\[ \begin{array}{rl}
+    g(y,z,x_{1},\dots ,x_{n}) 
+  & = (\forall t)_{y\le t\le z}P(t,x_{1},\dots,x_{n}) \\
+  & = (\forall t)_{\le z}\{ t<y \ \lor\ P(t,x_{1},\dots,x_{n}) \}
+\end{array}\] \[ \begin{array}{rl}
+    h(y,z,x_{1},\dots ,x_{n})
+  & = (\forall t)_{y\le t\le z}P(t,x_{1},\dots,x_{n}) \\
+  & = (\forall t)_{\le z}\{ t\ge y \ \&\ P(t,x_{1},\dots,x_{n}) \}
+\end{array}\]
+
+\subsection{}
+\[ RP(x,y) = \neg\{ (\exists t)_{\le x}(t|x)\&(t|y) \ \lor\ 
+                    (\exists t)_{\le y}(t|x)\&(t|y)  \} \]
+
+\subsection{}
+Admit.
+
+
+
+\section{Minimalization}
+
+\subsection{}
+\[ h(x) = \min_{n\le 2x}{2x^2<(n+1)^2} \]
+
+\subsection{}
+\[ h(x) = \min_{n\le 2x}{2x^2<n^2} \]
+
+\subsection{}
+\begin{align*}
+  T(0)   & = 0 \\
+  T(t+1) & = 2 + \min_{t}t>T(t) \ \&\ Prime(t) \ \&\ Prime(t+2)
+\end{align*}
+
+
+\subsection{}
+\begin{align*}
+  u(0)   & = 0 \\
+  u(t+1) & = \min_{t}t>u(t) \ \&\ SQSM(t)
+\end{align*}
