@@ -275,3 +275,33 @@ $ \min_{y}{x+y=7} $ is not since it is not total.
   \[ \mathrm{exp}_{y}(x) < \mathrm{exp}_{k}(\max\{x,y\}) .\] But
   \[ \mathrm{exp}_{k+1}(k+1) > \mathrm{exp}_{k}(\max\{x,y\}) = \mathrm{exp}_{k}(k+1) .\]
 \end{enumerate}
+
+
+
+\section{Pairing Functions and G\"odel Numbers}
+
+\subsection{}
+\begin{align*}
+  f'(y) & = f((y)_{1},(y)_{2},\dots (y)_{n}) \\
+  f(x_{1},x_{2},\dots x_{n}) & = f'([x_{1},x_{2},\dots x_{n}])
+\end{align*}
+
+
+\subsection{}
+There are several ways to solve this problem:
+\begin{enumerate}
+  \item 
+  If $ y_{1},y_{2},\dots y_{n} $ is a permutation of $ x_{1},x_{2},\dots x_{n} $,
+  then $ [y_{1},y_{2},\dots y_{n}] $ become greatest when $ y_{1}\le y_{2}\le \cdots \le y_{n} $.
+  It's easy to generate all $A_n^n$ permutation of $ x_{1},x_{2},\dots x_{n} $:
+  \begin{align*}
+    per_1(x_{1},x_{2},\dots x_{n}) & = [x_{1},x_{2},\dots x_{n-1},x_{n}] \\
+    per_2(x_{1},x_{2},\dots x_{n}) & = [x_{1},x_{2},\dots x_{n},x_{n-1}] \\
+    per_3(x_{1},x_{2},\dots x_{n}) & = [x_{1},x_{2},\dots x_{n-1},x_{n-2},x_{n}] \\
+    \cdots
+  \end{align*}
+  and it's also easy to pick out the biggest one:
+  \[ Sort([x_{1},x_{2},\dots x_{n}]) = \max(per_{1},per_{2},\dots per_{A_n^n}) \]
+  
+  \item Counting sort.
+\end{enumerate}
