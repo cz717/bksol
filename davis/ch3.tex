@@ -166,7 +166,7 @@ Since the latter can't be a predicate(whose value are 0 or 1), it must be the fo
 
 \subsection{}
 \[ \begin{array}{rl}
-    g(y,z,x_{1},\dots ,x_{n}) 
+    g(y,z,x_{1},\dots ,x_{n})
   & = (\forall t)_{y\le t\le z}P(t,x_{1},\dots,x_{n}) \\
   & = (\forall t)_{\le z}\{ t<y \ \lor\ P(t,x_{1},\dots,x_{n}) \}
 \end{array}\] \[ \begin{array}{rl}
@@ -176,7 +176,7 @@ Since the latter can't be a predicate(whose value are 0 or 1), it must be the fo
 \end{array}\]
 
 \subsection{}
-\[ RP(x,y) = \neg\{ (\exists t)_{\le x}(t|x)\&(t|y) \ \lor\ 
+\[ RP(x,y) = \neg\{ (\exists t)_{\le x}(t|x)\&(t|y) \ \lor\
                     (\exists t)_{\le y}(t|x)\&(t|y)  \} \]
 
 \subsection{}
@@ -204,3 +204,74 @@ Admit.
   u(0)   & = 0 \\
   u(t+1) & = \min_{t}t>u(t) \ \&\ SQSM(t)
 \end{align*}
+
+
+\subsection{}
+\begin{align*}
+  g(x,0)   & = 0 \\
+  g(x,t+1) & = 
+    \begin{cases}
+      t+1    & \mathrm{if}\ R(x,t+1) \\
+      g(x,t) & \mathrm{otherwise}
+    \end{cases}
+\end{align*}
+
+
+\subsection{}
+\[ \gcd(x,y) = \max_{t\le x+y}{(t|x)\&(t|y)} \]
+
+\subsection{}
+\[ \mathrm{lcm}(x,y) = \min_{x\le t\le xy}{(x|t)\&(y|t)} \]
+
+
+\subsection{}
+Let $ P(x,y) = 
+\begin{cases}
+  1 & \mathrm{if}\ x+y=7 \\
+  0 & \mathrm{otherwise}
+\end{cases} $, then $ P(x,y) $ is evidently computable. But 
+$ \min_{y}{x+y=7} $ is not since it is not total.
+
+
+\subsection{}
+\begin{enumerate}
+  \item Admit.
+  \item 
+  \begin{align*}
+    x\cdot y  & = \sum_{t=0}^{y}{x} - x \\
+    x^y       & = \begin{cases}
+                    1 & y=0 \\
+                   \underbrace{xx\cdots x}_{y} & y>0
+                  \end{cases} \\
+              & = \alpha(y)+\prod_{t=0}^{y-1}{\alpha(\alpha(y))} \\
+    x!        & = \prod_{t=0}^{x-1}{(x+1)} 
+  \end{align*}
+  Where $ \alpha(x) = 1-x $ is elementary.
+  
+  \item 
+  \begin{align*}
+    \sim P   & = \alpha(P) \\
+    P \lor Q & = \alpha(\alpha(P+Q)) \\
+    P \& Q   & = P \cdot Q \\
+    (\forall x)_{\le y}P(t,x_{1},\dots,x_{n}) & = \prod_{t=0}^x{P(t,x_{1},\dots,x_{n})} \\
+    (\exists x)_{\le y}P(t,x_{1},\dots,x_{n}) & = \alpha(\alpha(\sum_{t=0}^x{P(t,x_{1},\dots,x_{n})})) \\
+    \min_{t\le y}{P(t,x_{1},\dots,x_{n})} & = 
+      \sum_{u=0}^y\prod_{t=0}^u{\alpha(P(t,x_{1},\dots,x_{n}))} \cdot
+      (\exists x)_{\le y}P(t,x_{1},\dots,x_{n})
+  \end{align*}
+  
+  \item 
+  \begin{align*}
+    |x-y| & \Leftrightarrow (x-y)+(y-x) \\
+    x=y   & = \alpha(|x-y|) \\
+    y|x   & = (\exists t)_{\le y}(t\cdot y=x) \\
+    Prime(x) & = x>1 \ \&\ (\forall t)_{\le x}\{t=1\lor t=x\lor \sim(t|x) \} \\
+             & = \alpha(\alpha(x-1)) \ \&\ (\forall t)_{\le x}\{t=1\lor t=x\lor \alpha(t|x) \}
+  \end{align*}
+  
+  \item Admit.
+  \item 
+  If $ \mathrm{exp}_{y}(x) $ is elementary, there is a constant $k$ such that 
+  \[ \mathrm{exp}_{y}(x) < \mathrm{exp}_{k}(\max\{x,y\}) .\] But
+  \[ \mathrm{exp}_{k+1}(k+1) > \mathrm{exp}_{k}(\max\{x,y\}) = \mathrm{exp}_{k}(k+1) .\]
+\end{enumerate}
