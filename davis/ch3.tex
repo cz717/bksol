@@ -209,7 +209,7 @@ Admit.
 \subsection{}
 \begin{align*}
   g(x,0)   & = 0 \\
-  g(x,t+1) & = 
+  g(x,t+1) & =
     \begin{cases}
       t+1    & \mathrm{if}\ R(x,t+1) \\
       g(x,t) & \mathrm{otherwise}
@@ -225,18 +225,18 @@ Admit.
 
 
 \subsection{}
-Let $ P(x,y) = 
+Let $ P(x,y) =
 \begin{cases}
   1 & \mathrm{if}\ x+y=7 \\
   0 & \mathrm{otherwise}
-\end{cases} $, then $ P(x,y) $ is evidently computable. But 
+\end{cases} $, then $ P(x,y) $ is evidently computable. But
 $ \min_{y}{x+y=7} $ is not since it is not total.
 
 
 \subsection{}
 \begin{enumerate}
   \item Admit.
-  \item 
+  \item
   \begin{align*}
     x\cdot y  & = \sum_{t=0}^{y}{x} - x \\
     x^y       & = \begin{cases}
@@ -244,23 +244,23 @@ $ \min_{y}{x+y=7} $ is not since it is not total.
                    \underbrace{xx\cdots x}_{y} & y>0
                   \end{cases} \\
               & = \alpha(y)+\prod_{t=0}^{y-1}{\alpha(\alpha(y))} \\
-    x!        & = \prod_{t=0}^{x-1}{(x+1)} 
+    x!        & = \prod_{t=0}^{x-1}{(x+1)}
   \end{align*}
   Where $ \alpha(x) = 1-x $ is elementary.
-  
-  \item 
+
+  \item
   \begin{align*}
     \sim P   & = \alpha(P) \\
     P \lor Q & = \alpha(\alpha(P+Q)) \\
     P \& Q   & = P \cdot Q \\
     (\forall x)_{\le y}P(t,x_{1},\dots,x_{n}) & = \prod_{t=0}^x{P(t,x_{1},\dots,x_{n})} \\
     (\exists x)_{\le y}P(t,x_{1},\dots,x_{n}) & = \alpha(\alpha(\sum_{t=0}^x{P(t,x_{1},\dots,x_{n})})) \\
-    \min_{t\le y}{P(t,x_{1},\dots,x_{n})} & = 
+    \min_{t\le y}{P(t,x_{1},\dots,x_{n})} & =
       \sum_{u=0}^y\prod_{t=0}^u{\alpha(P(t,x_{1},\dots,x_{n}))} \cdot
       (\exists x)_{\le y}P(t,x_{1},\dots,x_{n})
   \end{align*}
-  
-  \item 
+
+  \item
   \begin{align*}
     |x-y| & \Leftrightarrow (x-y)+(y-x) \\
     x=y   & = \alpha(|x-y|) \\
@@ -268,10 +268,10 @@ $ \min_{y}{x+y=7} $ is not since it is not total.
     Prime(x) & = x>1 \ \&\ (\forall t)_{\le x}\{t=1\lor t=x\lor \sim(t|x) \} \\
              & = \alpha(\alpha(x-1)) \ \&\ (\forall t)_{\le x}\{t=1\lor t=x\lor \alpha(t|x) \}
   \end{align*}
-  
+
   \item Admit.
-  \item 
-  If $ \mathrm{exp}_{y}(x) $ is elementary, there is a constant $k$ such that 
+  \item
+  If $ \mathrm{exp}_{y}(x) $ is elementary, there is a constant $k$ such that
   \[ \mathrm{exp}_{y}(x) < \mathrm{exp}_{k}(\max\{x,y\}) .\] But
   \[ \mathrm{exp}_{k+1}(k+1) > \mathrm{exp}_{k}(\max\{x,y\}) = \mathrm{exp}_{k}(k+1) .\]
 \end{enumerate}
@@ -290,7 +290,7 @@ $ \min_{y}{x+y=7} $ is not since it is not total.
 \subsection{}
 There are several ways to solve this problem:
 \begin{enumerate}
-  \item 
+  \item
   If $ y_{1},y_{2},\dots y_{n} $ is a permutation of $ x_{1},x_{2},\dots x_{n} $,
   then $ [y_{1},y_{2},\dots y_{n}] $ become greatest when $ y_{1}\le y_{2}\le \cdots \le y_{n} $.
   It's easy to generate all $A_n^n$ permutation of $ x_{1},x_{2},\dots x_{n} $:
@@ -302,6 +302,84 @@ There are several ways to solve this problem:
   \end{align*}
   and it's also easy to pick out the biggest one:
   \[ Sort([x_{1},x_{2},\dots x_{n}]) = \max(per_{1},per_{2},\dots per_{A_n^n}) \]
+  where
+  \[ \max(x_{1},x_{2},\dots x_{A_n^n}) = 
+     \begin{cases}
+       x_{1} & \mathrm{if}\ x_{1}>x_{2}\& x_{1}>x_{3}\dots \\
+       \dots & \dots 
+     \end{cases} \]
+  The only thing should be treated carefully is to make sure that no two of 
+  predicates are overlapped with each other.
+
+  \item 
+  \[ Sort(x) = [y_{1},y_{2},\dots y_{n}] = \prod_{t=1}^{Lt(x)}P_t^{y(x,t)} \]
+  where $P_t$ is the t-th prime number; and $y(x,t) = y_t$. To get $y(x,t)$, 
+  we turn to Counting Sort. Let $c(x,i)$ be the number of members in
+  $ x_{1},x_{2},\dots x_{n} $ which is less than $x_{i}$:
+  \[ c(x,i) = \sum_{t=1}^{Lt(x)}x_t < x_i \]
+  Note that $ y(x,t) \neq x_{\min_{i\le Lt(x)}c(x,i)=t-1} $, since there may 
+  be some equal members in $x$. For example, if $ c(x,i) = c(x,j) = t-1 $, 
+  then $ y(x,t) = x_{i} = x_{j} $, but $ y(x,t+1) = \uparrow $.
+  \[\begin{split}
+    y(x,t) & = x_{\min_{i\le Lt(x)} c(x,i) = \max_{s<t}((\exists j)_{\le Lt(x)}c(x,j)=s) }  \\
+           & = x_{\min_{i\le Lt(x)} c(x,i) = t - \min_{s<t}((\exists j)_{\le Lt(x)}c(x,j)=(t-s)) }
+  \end{split} \]
   
-  \item Counting sort.
 \end{enumerate}
+
+
+\subsection{}
+Let $ G(x) = <F(x), F(x+1)> $, which is primitive recursive:
+\begin{align*}
+  G(0)   & = <0,1> = 2 \\
+  G(t+1) & = <r(G(t)),l(G(t))+r(G(t))>
+\end{align*}
+Then 
+\[ F(x) = l(G(x)) .\]
+
+
+\subsection{}
+$ h(x,y) = <h_1(x,y), h_2(x,y)> $ belongs to $\mathscr{C}$:
+\begin{align*}
+  h(x,0)   & = <h_1(x,0), h_2(x,0)> = <f_1(0),f_2(0)> \\
+  h(x,t+1) & = <h_1(x,t+1), h_2(x,t+1)> \\
+           & = <g_1(x,h_1(x,t), h_2(x,t)), g_2(x,h_1(x,t), h_2(x,t))> \\
+           & = <g_1(x,l(h(x,t)), r(h(x,t))), g_2(x,l(h(x,t)), r(h(x,t)))> 
+\end{align*}
+Then 
+\begin{align*}
+  & h_1(x,y) = l(h(x,y)) \\
+  & h_2(x,y) = r(h(x,y))
+\end{align*}
+are also belong to $\mathscr{C}$.
+
+
+\subsection{}
+\begin{enumerate}
+  \item 
+  $ \tilde f(n) $ is primitive recursive :
+  \begin{align*}
+    \tilde f(0)   & = 0 \\
+    \tilde f(t+1) & = [f(0),f(1),\dots ,f(t)] \\
+             & = [f(0),f(1),\dots ,f(t-1)]\cdot P_{t}^{f(t)} \\
+             & = \tilde f(t)P_{t}^{g(t,\tilde f(t))} 
+  \end{align*}
+  so is $ f(n) = g(n, \tilde f(n)) $.
+  
+  \item 
+  $ f(n) = g(n, \tilde f(n)) $ where $ g(n,x) = x_{n-2}+x_{n-1}^2+x_{n}^3 $.
+  
+  \item 
+  $ h(x) = g(x, \tilde h(x)) $ where $ g(x,y) = \sum_{t=0}^x{(y)_{t}} $.
+\end{enumerate}
+
+
+\subsection{}
+$ F(n) = [f(0,n),f(1,n-1),f(2,n-2),\dots ,f(n-1,1),f(n,0))] $ is primitive recursive:
+\begin{align*}
+  F(0)   & = [f(0,0)] = [g_1(0)] \\
+  F(t+1) & = [f(0,t+1),f(1,t),f(2,t-1),\dots ,f(t,1),f(t+1,0))] \\
+         & = [g_1(t+1),h(0,t-1,f(0,t),f(1,t-1)),\dots ,g_2(t)] \\
+         & = P_1^{g_1(t+1)}\cdot \prod_{i=1}^t{P_{i+1}^{h(i-1,t-i,(F(t))_i,(F(t))_{i+1})}} \cdot P_{t+2}^{g_2(t)} \\
+\end{align*}
+Then $ f(x,y) = (F(x+y))_{x+1} $ is also primitive recursive.
