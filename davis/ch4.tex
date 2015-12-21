@@ -1,0 +1,54 @@
+\chapter{A Universal Program}
+
+
+\section{Coding Programs by Numbers}
+
+\subsection{}
+Admit.
+
+\subsection{}
+\begin{align*}
+  575+1 & = 2^6 \cdot 3^2 = [6,2] \\
+  6     & = <0,3> = <0,<2,0>> \\
+  2     & = <0,1> = <0,<1,0>> \\
+\end{align*}
+Thus, program $\mathscr{P}$ is:
+\begin{align*}
+  Y \gets Y - 1 \\
+  Y \gets Y + 1
+\end{align*}
+
+
+
+\section{The Halting Problem}
+
+\subsection{}
+Admit.
+
+\subsection{}
+If $ \mathrm{\overline{HALT}}(x,y) $ is computable, then so is 
+$ \mathrm{HALT}(x,y)$ :
+\begin{align*}
+  & \mathrm{IF}\ \mathrm{\overline{HALT}}(X_1,X_2)\neq 0  \ \mathrm{GOTO}\ E \\
+  & Y \gets Y + 1
+\end{align*}
+
+
+\subsection{}
+\[ \mathrm{HALT}(x,y) = \mathrm{HALT}^1(<x,y>) \]
+
+
+\subsection{}
+$ \mathrm{HALT}(x,y) $ is total and $ \mathrm{HALT}(x,y) \le 1 $ for all $ x,y $.
+But it is not computable.
+
+
+\subsection{}
+Admit.
+
+
+\subsection{}
+Goldbach's conjecture is either true or false, and has nothing to do with
+the input $x$. If it's true, then $ f(x) = x $; otherwise, $ f(x) = 0 $.
+In both cases, $f(x)$ is primitive recursive.
+
