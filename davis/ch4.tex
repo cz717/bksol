@@ -26,7 +26,7 @@ Thus, program $\mathscr{P}$ is:
 Admit.
 
 \subsection{}
-If $ \mathrm{\overline{HALT}}(x,y) $ is computable, then so is 
+If $ \mathrm{\overline{HALT}}(x,y) $ is computable, then so is
 $ \mathrm{HALT}(x,y)$ :
 \begin{align*}
   & \mathrm{IF}\ \mathrm{\overline{HALT}}(X_1,X_2)\neq 0  \ \mathrm{GOTO}\ E \\
@@ -44,7 +44,17 @@ But it is not computable.
 
 
 \subsection{}
-Admit.
+Suppose $\#(\mathscr{P}) = n $.
+Let program $\mathscr{Q}$ be $\mathscr{P}$ followed instruction:
+\[ [E] \text{ IF } Y \neq 0 \text{ GOTO } E \]
+then
+\[ \psi_{\mathscr{Q}}(x) = \sim \mathrm{HALT}(x,x) \]
+and
+\[ \#(\mathscr{Q}) = n\cdot P_{Lt(n)+1}^{<5,<7,0>>} .\]
+So 
+\[ \psi_{\mathscr{P}}(\#(\mathscr{Q})) 
+   \Leftrightarrow \mathrm{HALT}(\#(\mathscr{Q}, \#(\mathscr{Q})
+   \Leftrightarrow \sim \mathrm{HALT}(\#(\mathscr{Q}, \#(\mathscr{Q}) .\]
 
 
 \subsection{}
@@ -52,3 +62,71 @@ Goldbach's conjecture is either true or false, and has nothing to do with
 the input $x$. If it's true, then $ f(x) = x $; otherwise, $ f(x) = 0 $.
 In both cases, $f(x)$ is primitive recursive.
 
+
+
+\section{Universality}
+
+\subsection{}
+Admit.
+
+\subsection{}
+\begin{enumerate}
+  \item 
+  \begin{align*}
+    & Z \gets \Phi(X,X) \\
+    & Y \gets Y + 1
+  \end{align*}
+  
+  \item 
+  \begin{align*}
+    & \text{IF } X = a_{1} \text{ GOTO } E \\
+    & \text{IF } X = a_{2} \text{ GOTO } E \\
+    & \cdots \\
+    & Z \gets \Phi(X,X) \\
+    & Y \gets Y + 1
+  \end{align*}
+  
+  \item 
+  Suppose program $\mathscr{P}$ begin with following instruction:
+  \[ [A] \text{ IF } X \neq 0 \text{ GOTO } A \]
+  then $\mathscr{P}$ is undefined for all $ x \neq 0 $. Since
+  $ \#(\mathscr{P}) > 0 $, so $ \Phi(\#(\mathscr{P}), \#(\mathscr{P}))\uparrow $
+  for such $\mathscr{P}$. Take
+  \[ B = \{b \ |\ (b)_1 = <1,<3,1>> \} ,\]
+  Then $ H_3(x) $ is partially computable:
+  \begin{align*}
+    & \text{IF } (X)_1 = <1,<3,1>> \text{ GOTO } E \\
+    & \cdots \\
+    & Z \gets \Phi(X,X) \\
+    & Y \gets Y + 1
+  \end{align*}
+  
+  \item 
+  \[ C = \{ x\ |\ \Phi(x,x)\uparrow \} \]
+  Then
+  \[ \begin{split}
+    H_4(x) & \Leftrightarrow \Phi(x,x)\downarrow \\
+           & = \mathrm{HALT}(x,x)
+  \end{split} \]
+  which is not computable.
+\end{enumerate}
+
+
+\subsection{}
+If $\mathscr{P}$ computes $\Phi^{(1)}(x,y) $, then
+\[\begin{split}
+  H_{\mathscr{P}}(x,y) & \Leftrightarrow \Phi^{(1)}(x,y) \text{ halts on inputs } x,y \\
+                       & = \mathrm{HALT}(x,y)
+\end{split}\]
+
+
+\subsection{}
+\[ f(x_1,x_2,\dots,x_n) = 
+   (r(\mathrm{SNAP}^{(n)}(x_1,x_2,\dots,x_n,\#(\mathscr{P}),g(x_1,x_2,\dots,x_n))))_1 \]
+
+
+\subsection{}
+Abort.
+
+\subsection{}
+Abort.
