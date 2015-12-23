@@ -51,8 +51,8 @@ then
 \[ \psi_{\mathscr{Q}}(x) = \sim \mathrm{HALT}(x,x) \]
 and
 \[ \#(\mathscr{Q}) = n\cdot P_{Lt(n)+1}^{<5,<7,0>>} .\]
-So 
-\[ \psi_{\mathscr{P}}(\#(\mathscr{Q})) 
+So
+\[ \psi_{\mathscr{P}}(\#(\mathscr{Q}))
    \Leftrightarrow \mathrm{HALT}(\#(\mathscr{Q}, \#(\mathscr{Q})
    \Leftrightarrow \sim \mathrm{HALT}(\#(\mathscr{Q}, \#(\mathscr{Q}) .\]
 
@@ -71,13 +71,13 @@ Admit.
 
 \subsection{}
 \begin{enumerate}
-  \item 
+  \item
   \begin{align*}
     & Z \gets \Phi(X,X) \\
     & Y \gets Y + 1
   \end{align*}
-  
-  \item 
+
+  \item
   \begin{align*}
     & \text{IF } X = a_{1} \text{ GOTO } E \\
     & \text{IF } X = a_{2} \text{ GOTO } E \\
@@ -85,8 +85,8 @@ Admit.
     & Z \gets \Phi(X,X) \\
     & Y \gets Y + 1
   \end{align*}
-  
-  \item 
+
+  \item
   Suppose program $\mathscr{P}$ begin with following instruction:
   \[ [A] \text{ IF } X \neq 0 \text{ GOTO } A \]
   then $\mathscr{P}$ is undefined for all $ x \neq 0 $. Since
@@ -100,8 +100,8 @@ Admit.
     & Z \gets \Phi(X,X) \\
     & Y \gets Y + 1
   \end{align*}
-  
-  \item 
+
+  \item
   \[ C = \{ x\ |\ \Phi(x,x)\uparrow \} \]
   Then
   \[ \begin{split}
@@ -121,7 +121,7 @@ If $\mathscr{P}$ computes $\Phi^{(1)}(x,y) $, then
 
 
 \subsection{}
-\[ f(x_1,x_2,\dots,x_n) = 
+\[ f(x_1,x_2,\dots,x_n) =
    (r(\mathrm{SNAP}^{(n)}(x_1,x_2,\dots,x_n,\#(\mathscr{P}),g(x_1,x_2,\dots,x_n))))_1 \]
 
 
@@ -130,3 +130,173 @@ Abort.
 
 \subsection{}
 Abort.
+
+
+
+\section{Recursively Enumerable Sets}
+
+\subsection{}
+Admit.
+
+
+\subsection{}
+\[ K_0 = \{ x\in N\ |\ \Phi(l(x), r(x))\downarrow \} \]
+
+
+\subsection{}
+\begin{enumerate}
+  \item
+  \[ \mathrm{gr}(f) = \{ x\in N \ |\ f((x)_1, (x)_2, \dots, (x)_n) = (x)_{n+1} \} \]
+
+  \item
+  If $ \mathrm{gr}(f) $ is recursive, then
+  $ \mathrm{gr}(f) = \{ x\in N \ |\ g(x) \} $
+  where $ g(x) $ is a recursive predicate.
+  Then the following program computes $ f(x) $:
+  \begin{align*}
+    [A]\ & \text{IF } g([X_1,X_2,\dots,X_n,Y]) \text{ GOTO } E \\
+         & Y \gets Y + 1 \\
+         & \text{GOTO } A
+  \end{align*}
+
+  \item 
+  \[ f(x_1,x_2) = 
+     \begin{cases}
+       x_2 - x_1 & \text{if } x_2 \ge x_1 \\
+       \uparrow  & \text{otherwise}
+     \end{cases} \]
+  \[ g(x) \Leftrightarrow Lt(x) = 3\ \&\ (x)_1 + (x)_3 = (x)_2 \]
+  $ g(x) $ is computable but $ f(x_1,x_2) $ is not, because it's not total.
+\end{enumerate}
+
+
+\subsection{}
+Let $ g(x) \Leftrightarrow (\exists t\in N)f(t)=x $, then it's computed by
+following program:
+\begin{align*}
+  [A]\ & \text{IF } f(Z)=X \text{ GOTO } B \\
+       & \text{IF } f(Z)>X \text{ GOTO } E \\
+       & Z \gets Z + 1 \\
+       & \text{GOTO } A \\
+  [B]\ & Y \gets Y + 1 \\
+\end{align*}
+Since $ f(x)\ge x $, this program always halts when or before $Z$ growing
+to $X$. So, it's both partially computable and total.
+
+
+\subsection{}
+If $A$ is r.e, then $ A = \{ f(x)\ |\ x\in N \} $ for some computable function
+$f(x)$. Since $A$ is infinite, namely range of $f(x)$ is infinite, so
+\[ (\forall x\in N)(\exists y>x)f(y)>f(x) \]
+Then $ next(x) = \min_{y\ge x} f(y)>f(x) $ is total thus computable:
+\begin{align*}
+       & Z \gets X \\
+  [A]\ & \text{IF } f(Z)\ge f(X) \text{ GOTO } E \\
+       & Z \gets Z + 1 \\
+       & \text{GOTO } A \\
+\end{align*}
+so as $g(x)$:
+\begin{align*}
+  g(0)   & = 0 \\
+  g(t+1) & = next(g(t)) .\\
+\end{align*}
+Then $ h(x) = f(g(x)) $ is a strictly increasing computable function and 
+range of $h(x)$ is a subset of $f(x)$ . So r.e. set
+\[ B = \{ h(x)\ |\ x\in N \} \]
+is an infinite subset of $A$, and, by last exercise, is recursive.
+
+
+\subsection{}
+Abort.
+
+
+\subsection{}
+\begin{enumerate}
+  \item 
+  $K$ and $\overline{K}$ are two sets, and $ K \bigcup \overline{K} = N $. $N$ is evidently
+  r.e., but $ \overline{K} $ is not.
+  
+  \item 
+  $ \overline{K} \subseteq N $.S
+\end{enumerate}
+
+\subsection{}
+Suppose there is computable function $f(x)$ such that:
+\[ f(x) =
+     \begin{cases}
+       \Phi(x,x)+1 & \text{if } \Phi(x,x)\downarrow \\
+       0           & \text{otherwise}
+     \end{cases} \]
+Then
+\[ \alpha(\alpha(f(x))) \Leftrightarrow \mathrm{HALT}(x,x) \]
+which is not computable.
+
+
+\subsection{}
+\begin{enumerate}
+  \item 
+  Suppose $p$ is the number of program computes $g(x)$, and $q$ is
+  that for $h(x)$.
+  \begin{align*}
+    [A]\quad & \text{IF } STP^{(1)}(X,p,Z) \text{ GOTO } B \\
+         & \text{IF } STP^{(1)}(X,q,Z) \text{ GOTO } C \\
+         & Z \gets Z + 1 \\
+         & \text{GOTO } A \\
+    [B]\quad & Y \gets g(X) \\
+         & \text{GOTO } E \\
+    [C]\quad & Y \gets h(X) \\
+         & \text{GOTO } E \\
+  \end{align*}
+  
+  \item 
+  No. According to Exercise 3.2, it's possible to compute $g(x)$ such that:
+  \[ g(x) = 
+     \begin{cases}
+       1        & \Phi(x,x) \downarrow \\
+       \uparrow & \text{otherwise}
+     \end{cases} \]
+  Take $ h(x) = 0 $ for every $x$, if
+  \[ f(x) =
+     \begin{cases}
+       g(x)    & \text{if } g(x) \downarrow \\
+       h(x)     & \text{if } g(x) \uparrow \text{ and } h(x) \downarrow \\
+       \uparrow & \text{otherwise}
+     \end{cases} \]
+  then
+  \[ f(x) = 
+     \begin{cases}
+       1 & \text{if } \Phi(x,x) \downarrow \\
+       0 & \text{otherwise}
+     \end{cases}
+     \Leftrightarrow \mathrm{HALT}(x,x) \]
+\end{enumerate}
+
+
+\subsection{}
+\begin{enumerate}
+  \item 
+  Let $f(x)$ be partially computable function computed by following program:
+  \begin{align*}
+    [A]\quad & \text{IF } P(Z,X) \text{ GOTO } E \\
+             & Z \gets Z + 1 \\
+             & \text{GOTO } A 
+  \end{align*}
+  Then
+  \[ A = \{ x\in N\ |\ f(x)\downarrow \} \]
+  So $A$ is r.e.
+  
+  \item 
+  \begin{align*}
+    [A]\quad & \text{IF } Q((Z)_1,(Z)_2,\dots,(Z)_n,X) \text{ GOTO } E \\
+             & Z \gets Z + 1 \\
+             & \text{GOTO } A
+  \end{align*}
+\end{enumerate}
+
+
+\subsection{}
+\begin{align*}
+  \overline{K} & = \{ x\in N\ |\ \Phi(x,x)\uparrow \} \\
+               & = \{ x\in N\ |\ (\forall t)\sim STP^{(1)}(x,x,t) \}
+\end{align*}
+$\sim STP^{(1)}(x,x,t)$ is computable but $\overline{K}$ is not r.e.
