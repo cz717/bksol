@@ -22,3 +22,8 @@ The MIT Press. 1996.
 [sf]  
 [Benjamin C. Pierce.](http://www.cis.upenn.edu/~bcpierce/)etc. 
 [*Software Fundations*.](http://www.cis.upenn.edu/~bcpierce/sf/current/index.html) 
+
+[st]  
+Thomas Jech. 
+*Set Theory*. 
+Springer. 2003.
