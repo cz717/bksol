@@ -18,3 +18,5 @@
 *.synctex.gz
 *.pdf
 
+# Coq
+*.vo
