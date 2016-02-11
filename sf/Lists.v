@@ -565,7 +565,8 @@ Qed.
 Theorem count_member_nonzero : forall (s : bag),
   leb 1 (count 1 (1 :: s)) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. reflexivity.   
+Qed. 
 
 (** The following lemma about [leb] might help you in the next proof. *)
 
@@ -581,7 +582,12 @@ Proof.
 Theorem remove_decreases_count: forall (s : bag),
   leb (count 0 (remove_one 0 s)) (count 0 s) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction s as [|h t].
+  - reflexivity.
+  - simpl. destruct h as [|h'].
+    + rewrite <- beq_nat_refl. rewrite -> ble_n_Sn. reflexivity.
+    + simpl. rewrite IHt. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (bag_count_sum)  *)
@@ -597,7 +603,16 @@ Proof.
 (There is a hard way and an easy way to do this.)
 *)
 
-(* FILL IN HERE *)
+Theorem rev_inj : forall (l1 l2 : natlist), 
+  rev l1 = rev l2 -> l1 = l2.
+Proof.
+  intros.
+  rewrite <- (rev_involutive l1).
+  rewrite <- (rev_involutive l2).
+  rewrite H.
+  reflexivity.
+Qed.
+
 (** [] *)
 
 
@@ -651,16 +666,19 @@ Definition option_elim (d : nat) (o : natoption) : nat :=
     have to pass a default element for the [nil] case.  *)
 
 Definition hd_error (l : natlist) : natoption :=
-  (* FILL IN HERE *) admit.
+  match l with
+  | nil => None
+  | h :: _ => Some h
+  end.
 
 Example test_hd_error1 : hd_error [] = None.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Example test_hd_error2 : hd_error [1] = Some 1.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Example test_hd_error3 : hd_error [5;6] = Some 5.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, optional (option_elim_hd)  *)
@@ -669,7 +687,10 @@ Example test_hd_error3 : hd_error [5;6] = Some 5.
 Theorem option_elim_hd : forall (l:natlist) (default:nat),
   hd default l = option_elim default (hd_error l).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. destruct l as [|h t].
+  - reflexivity. 
+  - reflexivity.
+Qed.
 (** [] *)
 
 End NatList.
@@ -688,7 +709,8 @@ Definition beq_id x1 x2 :=
 (** **** Exercise: 1 star (beq_id_refl)  *)
 Theorem beq_id_refl : forall x, true = beq_id x x.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros [n]. simpl. rewrite <- beq_nat_refl. reflexivity.
+Qed.
 (** [] *)
 
 (** Now we define the type of partial maps: *)
@@ -719,7 +741,8 @@ Theorem update_eq :
   forall (d : partial_map) (k : id) (v: nat),
     find k (update d k v) = Some v.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros. simpl. rewrite <- beq_id_refl. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star (update_neq)  *)
@@ -727,7 +750,8 @@ Theorem update_neq :
   forall (d : partial_map) (m n : id) (o: nat),
     beq_id m n = false -> find m (update d n o) = find m d.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros. simpl. rewrite H. reflexivity. 
+Qed.
 (** [] *)
 
 End PartialMap.
