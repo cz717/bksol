@@ -20,3 +20,6 @@
 
 # Coq
 *.vo
+*.glob
+*.aux
+
