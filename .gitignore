@@ -23,3 +23,5 @@
 *.glob
 *.aux
 
+# emacs
+*~
