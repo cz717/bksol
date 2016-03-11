@@ -532,7 +532,30 @@ End R.
       Hint: choose your induction carefully!
 *)
 
-(* FILL IN HERE *)
+Inductive subseq : list nat -> list nat -> Prop :=
+  | c1: forall x: list nat, subseq [] x
+  | c2: forall x1 h x2, subseq x1 x2 -> subseq x1 (h::x2)
+  | c3: forall h t x, subseq t x -> subseq (h::t) (h::x).
+
+Theorem subseq_refl : forall x : list nat,  subseq x x.
+Proof.
+  intros x. induction x as [|h t].
+  - apply c1.
+  - apply c3. apply IHt.
+Qed.
+
+Theorem subseq_app : 
+  forall l1 l2 l3, subseq l1 l2 -> subseq l1 (l2++l3).
+Proof.
+  intros l1 l2 l3. 
+  generalize dependent l1.
+  induction l2 as [|h t].
+  - intros l1 H. inversion H. apply c1.
+  - intros l1 H. inversion H.
+    + apply c1.
+    + simpl. apply c2. apply IHt. apply H2.
+    + simpl. apply c3. apply IHt. apply H2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (R_provability)  *)
@@ -593,39 +616,8 @@ Inductive exp_match {T} : list T -> reg_exp T -> Prop :=
 
 Notation "s =~ re" := (exp_match s re) (at level 80).
 
-(**
-                          ----------------                    (MEmpty)
-                           [] =~ EmptyStr
-
-                          ---------------                      (MChar)
-                           [x] =~ Char x
-
-                       s1 =~ re1    s2 =~ re2
-                      -------------------------                 (MApp)
-                       s1 ++ s2 =~ App re1 re2
-
-                              s1 =~ re1
-                        ---------------------                (MUnionL)
-                         s1 =~ Union re1 re2
-
-                              s2 =~ re2
-                        ---------------------                (MUnionR)
-                         s2 =~ Union re1 re2
-
-                          ---------------                     (MStar0)
-                           [] =~ Star re
-
-                      s1 =~ re    s2 =~ Star re
-                     ---------------------------            (MStarApp)
-                        s1 ++ s2 =~ Star re
-
-*)
-
-
 
 (* ############################################################ *)
-
-(** Let's illustrate these rules with a few examples. *)
 
 Example reg_exp_ex1 : [1] =~ Char 1.
 Proof.
@@ -639,14 +631,10 @@ Proof.
   - apply MChar.
 Qed.
 
-
-
 Example reg_exp_ex3 : ~ ([1; 2] =~ Char 1).
 Proof.
   intros H. inversion H.
 Qed.
-
-
 
 Fixpoint reg_exp_of_list {T} (l : list T) :=
   match l with
@@ -665,9 +653,6 @@ Proof.
   apply MEmpty.
 Qed.
 
-(** We can also prove general facts about [exp_match].  For instance,
-    the following lemma shows that every string [s] that matches [re]
-    also matches [Star re]. *)
 
 Lemma MStar1 :
   forall T s (re : reg_exp T) ,
@@ -681,8 +666,6 @@ Proof.
   - apply MStar0.
 Qed.
 
-(** (Note the use of [app_nil_r] to change the goal of the theorem to
-    exactly the same shape expected by [MStarApp].) *)
 
 (** **** Exercise: 3 stars (exp_match_ex1)  *)
 (** The following lemmas show that the informal matching rules given
@@ -692,13 +675,19 @@ Qed.
 Lemma empty_is_empty : forall T (s : list T),
   ~ (s =~ EmptySet).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros T s H.
+  inversion H.
+Qed.
 
 Lemma MUnion' : forall T (s : list T) (re1 re2 : reg_exp T),
   s =~ re1 \/ s =~ re2 ->
   s =~ Union re1 re2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros T s re1 re2.
+  intros [ H | H ].
+  - apply MUnionL. apply H.
+  - apply MUnionR. apply H.
+Qed.
 
 (** The next lemma is stated in terms of the [fold] function from the
     [Poly] chapter: If [ss : list (list T)] represents a sequence of
@@ -709,28 +698,44 @@ Lemma MStar' : forall T (ss : list (list T)) (re : reg_exp T),
   (forall s, In s ss -> s =~ re) ->
   fold app ss [] =~ Star re.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros T ss re H.
+  induction ss as [|h t].
+  - simpl. apply MStar0.
+  - simpl. apply MStarApp.
+    + apply H. simpl. left. trivial.
+    + apply IHt. intros s H'.
+      apply H. simpl. right. apply H'.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars (reg_exp_of_list)  *)
 (** Prove that [reg_exp_of_list] satisfies the following
     specification: *)
 
-
 Lemma reg_exp_of_list_spec : forall T (s1 s2 : list T),
   s1 =~ reg_exp_of_list s2 <-> s1 = s2.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros T s1 s2. 
+  generalize dependent s1.
+  induction s2 as [|h t].
+  - (* s2 = [] *)
+    split. 
+    + intros H. simpl in H. inversion H. reflexivity.
+    + intros H. simpl. rewrite H. apply MEmpty.
+  - (* s2 = h::t *)
+    intros s1. split. 
+    + intros H. simpl in H. inversion H. 
+      inversion H3. simpl. 
+      rewrite (IHt s2) in H4. rewrite H4. reflexivity.
+    + intros H. simpl. rewrite H.
+      assert ( A : forall S (x:S) y, [x]++y = x::y).
+      {  intros S x y. simpl. reflexivity.  }
+      rewrite <- A. apply MApp.
+      * apply MChar.
+      * apply IHt. reflexivity.
+Qed.
 
-(** Since the definition of [exp_match] has a recursive
-    structure, we might expect that proofs involving regular
-    expressions will often require induction on evidence.  For
-    example, suppose that we wanted to prove the following intuitive
-    result: If a regular expression [re] matches some string [s], then
-    all elements of [s] must occur somewhere in [re].  To state this
-    theorem, we first define a function [re_chars] that lists all
-    characters that occur in a regular expression: *)
+(** [] *)
 
 Fixpoint re_chars {T} (re : reg_exp T) : list T :=
   match re with
@@ -741,8 +746,6 @@ Fixpoint re_chars {T} (re : reg_exp T) : list T :=
   | Union re1 re2 => re_chars re1 ++ re_chars re2
   | Star re => re_chars re
   end.
-
-(** We can then phrase our theorem as follows: *)
 
 Theorem in_re_match : forall T (s : list T) (re : reg_exp T) (x : T),
   s =~ re ->
@@ -775,16 +778,6 @@ Proof.
     right. apply (IH Hin).
   - (* MStar0 *)
     destruct Hin.
-
-(** Something interesting happens in the [MStarApp] case.  We obtain
-    _two_ induction hypotheses: One that applies when [x] occurs in
-    [s1] (which matches [re]), and a second one that applies when [x]
-    occurs in [s2] (which matches [Star re]).  This is a good
-    illustration of why we need induction on evidence for [exp_match],
-    as opposed to [re]: The latter would only provide an induction
-    hypothesis for strings that match [re], which would not allow us
-    to reason about the case [In x s2]. *)
-
   - (* MStarApp *)
     simpl. rewrite in_app_iff in Hin.
     destruct Hin as [Hin | Hin].
@@ -792,7 +785,6 @@ Proof.
       apply (IH1 Hin).
     + (* In x s2 *)
       apply (IH2 Hin).
-
 Qed.
 
 (** **** Exercise: 4 stars (re_not_empty)  *)
@@ -801,21 +793,72 @@ Qed.
     is correct. *)
 
 Fixpoint re_not_empty {T} (re : reg_exp T) : bool :=
-  (* FILL IN HERE *) admit.
+  match re with
+    | EmptySet => false
+    | EmptyStr => true
+    | Char _ => true
+    | App re1 re2 => andb (re_not_empty re1) (re_not_empty re2)
+    | Union re1 re2 => orb (re_not_empty re1) (re_not_empty re2)
+    | Star re1 => true
+  end.
 
 Lemma re_not_empty_correct : forall T (re : reg_exp T),
   (exists s, s =~ re) <-> re_not_empty re = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros T re.  split.
+  - (* -> *)
+    intros [s Hmatch].
+    induction Hmatch
+    as [
+        |x'
+        |s1 re1 s2 re2 Hmatch1 IH1 Hmatch2 IH2
+        |s1 re1 re2 Hmatch IH|re1 s2 re2 Hmatch IH
+        |re|s1 s2 re Hmatch1 IH1 Hmatch2 IH2].
+    + (* EmptyStr *)
+      trivial.
+    + (* Char *)
+      trivial.
+    + (* App *)
+      simpl. rewrite IH1. rewrite IH2. trivial.
+    + (* Union *)
+      simpl. rewrite IH. trivial.
+    + (* Union *)
+      simpl. rewrite IH. 
+      destruct (re_not_empty re1);trivial.
+    + (* Star *)
+      trivial.
+    + (* Star *)
+      trivial.
+  - (* <- *)
+    intros H. 
+    induction re.
+    + (* EmptySet *)
+      inversion H.
+    + (* EmptyStr *)
+      exists []. apply MEmpty.
+    + (* Char *)
+      exists [t]. apply MChar.
+    + (* App *)
+      simpl in H. 
+      rewrite andb_true_iff in H.
+      destruct H as [L R].
+      destruct (IHre1 L) as [s1 H1].
+      destruct (IHre2 R) as [s2 H2].
+      exists (s1++s2). apply MApp; assumption.
+    + (* union *)
+      simpl in H. rewrite orb_true_iff in H.
+      destruct H as [H | H].
+      * destruct (IHre1 H) as [s1 M].
+        exists s1. apply MUnionL. assumption.
+      * destruct (IHre2 H) as [s2 M].
+        exists s2. apply MUnionR. assumption.
+    + (* Star *)
+      exists []. apply MStar0.
+Qed.
+
 (** [] *)
 
 (** ** The [remember] Tactic *)
-
-(** One potentially confusing feature of the [induction] tactic is
-    that it happily lets you try to set up an induction over a term
-    that isn't sufficiently general.  The net effect of this will be
-    to lose information (much as [destruct] can do), and leave you
-    unable to complete the proof. Here's an example: *)
 
 Lemma star_app: forall T (s1 s2 : list T) (re : reg_exp T),
   s1 =~ Star re ->
@@ -823,65 +866,20 @@ Lemma star_app: forall T (s1 s2 : list T) (re : reg_exp T),
   s1 ++ s2 =~ Star re.
 Proof.
   intros T s1 s2 re H1.
-
-(** Just doing an [inversion] on [H1] won't get us very far in the
-    recursive cases. (Try it!). So we need induction. Here is a naive
-    first attempt: *)
-
   induction H1
     as [|x'|s1 re1 s2' re2 Hmatch1 IH1 Hmatch2 IH2
         |s1 re1 re2 Hmatch IH|re1 s2' re2 Hmatch IH
         |re''|s1 s2' re'' Hmatch1 IH1 Hmatch2 IH2].
-
-(** But now, although we get seven cases (as we would expect from the
-    definition of [exp_match]), we lost a very important bit of
-    information from [H1]: the fact that [s1] matched something of the
-    form [Star re].  This means that we have to give proofs for _all_
-    seven constructors of this definition, even though all but two of
-    them ([MStar0] and [MStarApp]) are contradictory.  We can still
-    get the proof to go through for a few constructors, such as
-    [MEmpty]... *)
-
   - (* MEmpty *)
     simpl. intros H. apply H.
-
-(** ... but most of them get stuck.  For [MChar], for instance, we
-    must show that
-    s2 =~ Char x' -> x' :: s2 =~ Char x',
-    which is clearly impossible. *)
-
   - (* MChar. Stuck... *)
-
 Abort.
-
-(** The problem is that [induction] over a Prop hypothesis only works
-    properly with hypotheses that are completely general, i.e., ones
-    in which all the arguments are variables, as opposed to more
-    complex expressions, such as [Star re].  In this respect it
-    behaves more like [destruct] than like [inversion].
-
-    We can solve this problem by generalizing over the problematic
-    expressions with an explicit equality: *)
 
 Lemma star_app: forall T (s1 s2 : list T) (re re' : reg_exp T),
   s1 =~ re' ->
   re' = Star re ->
   s2 =~ Star re ->
   s1 ++ s2 =~ Star re.
-
-(** We can now proceed by performing induction over evidence directly,
-    because the argument to the first hypothesis is sufficiently
-    general, which means that we can discharge most cases by inverting
-    the [re' = Star re] equality in the context.
-
-    This idiom is so common that Coq provides a tactic to
-    automatically generate such equations for us, avoiding thus the
-    need for changing the statements of our theorems.  Calling
-    [remember e as x] causes Coq to (1) replace all occurrences of the
-    expression [e] by the variable [x], and (2) add an equation [x =
-    e] to the context.  Here's how we can use it to show the above
-    result: *)
-
 Abort.
 
 Lemma star_app: forall T (s1 s2 : list T) (re : reg_exp T),
@@ -891,29 +889,17 @@ Lemma star_app: forall T (s1 s2 : list T) (re : reg_exp T),
 Proof.
   intros T s1 s2 re H1.
   remember (Star re) as re'.
-
-(** We now have [Heqre' : re' = Star re]. *)
-
   generalize dependent s2.
   induction H1
     as [|x'|s1 re1 s2' re2 Hmatch1 IH1 Hmatch2 IH2
         |s1 re1 re2 Hmatch IH|re1 s2' re2 Hmatch IH
         |re''|s1 s2' re'' Hmatch1 IH1 Hmatch2 IH2].
 
-(** The [Heqre'] is contradictory in most cases, which allows us to
-    conclude immediately. *)
-
   - (* MEmpty *)  inversion Heqre'.
   - (* MChar *)   inversion Heqre'.
   - (* MApp *)    inversion Heqre'.
   - (* MUnionL *) inversion Heqre'.
   - (* MUnionR *) inversion Heqre'.
-
-(** In the interesting cases (those that correspond to [Star]), we can
-    proceed as usual.  Note that the induction hypothesis [IH2] on the
-    [MStarApp] case mentions an additional premise [Star re'' = Star
-    re'], which results from the equality generated by [remember]. *)
-
   - (* MStar0 *)
     inversion Heqre'. intros s H. apply H.
   - (* MStarApp *)
@@ -938,7 +924,30 @@ Lemma MStar'' : forall T (s : list T) (re : reg_exp T),
     s = fold app ss []
     /\ forall s', In s' ss -> s' =~ re.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros T s re H.
+  remember (Star re) as re'.
+  induction H
+    as [|x'|s1 re1 s2 re2 Hmatch1 IH1 Hmatch2 IH2
+        |s1 re1 re2 Hmatch IH|re1 s2 re2 Hmatch IH
+        |re''|s1 s2 re'' Hmatch1 IH1 Hmatch2 IH2].
+  - inversion Heqre'.
+  - inversion Heqre'.
+  - inversion Heqre'.
+  - inversion Heqre'.
+  - inversion Heqre'.
+  - (* Star 0 *)
+    exists []. split.
+    + reflexivity. 
+    + intros s' H. inversion H.
+  - (* Star  *)
+    destruct (IH2 Heqre') as [ss' [L R]].
+    exists (s1::ss'). split.
+    + simpl. rewrite <- L. reflexivity.
+    + intros s' H. destruct H.
+      { rewrite <- H. inversion Heqre'. rewrite H1 in Hmatch1. apply Hmatch1. }
+      { apply R. apply H. }
+Qed.
+
 (** [] *)
 
 (* ############################################################ *)
@@ -1024,7 +1033,17 @@ Proof.
        | re | s1 s2 re Hmatch1 IH1 Hmatch2 IH2 ].
   - (* MEmpty *)
     simpl. omega.
-  (* FILL IN HERE *) Admitted.
+  - (* Char *)
+    simpl. omega.
+  - (* App *)
+    simpl. 
+
+
+
+Abort.
+
+
+
 
 End Pumping.
 
@@ -1032,12 +1051,6 @@ End Pumping.
 
 (* ####################################################### *)
 (** * Improving Reflection *)
-
-(** We've seen in the [Logic] chapter that we often need to
-    relate boolean computations to statements in
-    [Prop]. Unfortunately, performing this conversion by hand can
-    result in tedious proof scripts. Consider the proof of the
-    following theorem: *)
 
 Theorem filter_not_empty_In : forall n l,
   filter (beq_nat n) l <> [] ->
@@ -1055,38 +1068,10 @@ Proof.
       intros H'. right. apply IHl'. apply H'.
 Qed.
 
-(** In the first branch after [destruct], we explicitly
-    apply the [beq_nat_true_iff] lemma to the equation generated by
-    destructing [beq_nat n m], to convert the assumption [beq_nat n m
-    = true] into the assumption [n = m], which is what we need to
-    complete this case.
-
-    We can streamline this proof by defining an inductive proposition
-    that yields a better case-analysis principle for [beq_nat n
-    m].  Instead of generating an equation such as [beq_nat n m =
-    true], which is not directly useful, this principle gives us right
-    away the assumption we need: [n = m].  We'll actually define
-    something a bit more general, which can be used with arbitrary
-    properties (and not just equalities): *)
-
 Inductive reflect (P : Prop) : bool -> Prop :=
 | ReflectT : P -> reflect P true
 | ReflectF : ~ P -> reflect P false.
 
-(** The [reflect] property takes two arguments: a proposition
-    [P] and a boolean [b].  Intuitively, it states that the property
-    [P] is _reflected_ in (i.e., equivalent to) the boolean [b]: [P]
-    holds if and only if [b = true].  To see this, notice that, by
-    definition, the only way we can produce evidence that [reflect P
-    true] holds is by showing that [P] is true and using the
-    [ReflectT] constructor.  If we invert this statement, this means
-    that it should be possible to extract evidence for [P] from a
-    proof of [reflect P true].  Conversely, the only way to show
-    [reflect P false] is by combining evidence for [~ P] with the
-    [ReflectF] constructor.
-
-    It is easy to formalize this intuition and show that the two
-    statements are indeed equivalent: *)
 
 Theorem iff_reflect : forall P b, (P <-> b = true) -> reflect P b.
 Proof.
@@ -1098,32 +1083,21 @@ Qed.
 (** **** Exercise: 2 stars, recommended (reflect_iff)  *)
 Theorem reflect_iff : forall P b, reflect P b -> (P <-> b = true).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P b R.
+  destruct R as [ HP | NP ]. 
+  - split; trivial.
+  - split. 
+    + intros HP. elim (NP HP).
+    + intros H. inversion H.
+Qed.
+
 (** [] *)
-
-(** The advantage of [reflect] over the normal "if and only if"
-    connective is that, by destructing a hypothesis or lemma of the
-    form [reflect P b], we can perform case analysis on [b] while at
-    the same time generating appropriate hypothesis in the two
-    branches ([P] in the first subgoal and [~ P] in the second).
-
-    To use [reflect] to produce a better proof of
-    [filter_not_empty_In], we begin by recasting the
-    [beq_nat_iff_true] lemma into a more convenient form in terms of
-    [reflect]: *)
 
 Lemma beq_natP : forall n m, reflect (n = m) (beq_nat n m).
 Proof.
   intros n m.
   apply iff_reflect. rewrite beq_nat_true_iff. reflexivity.
 Qed.
-
-(** The new proof of [filter_not_empty_In] now goes as follows.
-    Notice how the calls to [destruct] and [apply] are combined into a
-    single call to [destruct].  (To see this clearly, look at the two
-    proofs of [filter_not_empty_In] in your Coq browser and observe
-    the differences in proof state at the beginning of the first case
-    of the [destruct].) *)
 
 Theorem filter_not_empty_In' : forall n l,
   filter (beq_nat n) l <> [] ->
@@ -1139,19 +1113,6 @@ Proof.
     + (* n <> m *)
       intros H'. right. apply IHl'. apply H'.
 Qed.
-
-(** Although this technique arguably gives us only a small gain
-    in convenience for this particular proof, using [reflect]
-    consistently often leads to shorter and clearer proofs. We'll see
-    many more examples where [reflect] comes in handy in later
-    chapters.
-
-    The use of the [reflect] property was popularized by _SSReflect_,
-    a Coq library that has been used to formalize important results in
-    mathematics, including as the 4-color theorem and the
-    Feit-Thompson theorem.  The name SSReflect stands for _small-scale
-    reflection_, i.e., the pervasive use of reflection to simplify
-    small proof steps with boolean computations. *)
 
 (* ####################################################### *)
 (** * Additional Exercises *)
@@ -1173,7 +1134,38 @@ Qed.
        forall l, pal l -> l = rev l.
 *)
 
-(* FILL IN HERE *)
+Inductive pal {X : Type} : list X -> Prop :=
+  | Empty : pal []
+  | Single : forall c, pal [c]
+  | Sym : forall c l, pal l -> pal ([c]++ l ++ [c]).
+
+Theorem pal_app_revl : forall (X:Type) (l:list X), pal (l ++ rev l).
+Proof.
+  intros X l.
+  induction l as [|h t].
+  - (* l = [] *)
+    simpl. apply Empty.
+  - (* l = h::t *)
+    simpl. 
+    assert (H: forall (T:Type) (x:T) l1, [x]++l1 = x::l1).
+    { intros T x l1. simpl. reflexivity.  }
+    rewrite <- H. rewrite app_assoc with (l:=t).
+    apply Sym. apply IHt.
+Qed.
+
+Theorem pal_rev : forall (X:Type) (l:list X), pal l -> l = rev l.
+Proof.
+  intros X l P.
+  induction P as [ | h IHh | h t P' IHh ].
+  - (* Empty *)
+    trivial.
+  - (* Single *)
+    trivial.
+  - (* Sym *)
+    simpl. rewrite rev_app_distr. simpl.
+    rewrite <- IHh. reflexivity.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 5 stars, optional (palindrome_converse)  *)
@@ -1183,7 +1175,21 @@ Qed.
      forall l, l = rev l -> pal l.
 *)
 
-(* FILL IN HERE *)
+Theorem rev_pal : forall (X:Type) (l:list X), l = rev l -> pal l.
+Proof.
+  intros X l R.
+  induction l as [|h t].
+  - (* l = [] *)
+    apply Empty.
+  - (* l = h::t *)
+    simpl in R.
+    induction t as [|h' t'].
+    + (* t = [] *)
+      apply Single.
+    + (* t = h'::t' *)
+      simpl in R. 
+Abort.
+
 (** [] *)
 
 (** **** Exercise: 4 stars, advanced (filter_challenge)  *)
