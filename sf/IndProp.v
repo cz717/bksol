@@ -309,15 +309,15 @@ Inductive empty_relation : nat -> nat -> Prop := .
 Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
 Proof.
   intros m n o mn.
+  generalize dependent o.
   induction mn as [ | n' mn' IH ].
   - trivial.
-  - intros no. apply IH.
+  - intros o no. apply IH.
     induction no as [ | o' no' IH' ].
     + apply le_S. apply le_n.
     + apply le_S. apply IH'.
-      intros n'o'. 
-      
-Admitted.
+Qed.
+
 
 Theorem O_le_n : forall n,
   0 <= n.
@@ -341,10 +341,17 @@ Qed.
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof.
-  intros n m S.
-  induction S as [ E | ].
-  
-Admitted.
+  intros n m. 
+  generalize dependent n.
+  induction m as [|m'].
+  - intros n H. inversion H. 
+    + apply le_n. 
+    + inversion H1.
+  - intros n H.
+    inversion H as [ E | m Sm' IH ].
+    + apply le_n.
+    + apply le_S. apply IHm'. apply Sm'.
+Qed.
 
 
 Theorem le_plus_l : forall a b,
@@ -1037,7 +1044,7 @@ Proof.
     simpl. omega.
   - (* App *)
     simpl. 
-
+    
 
 
 Abort.
