@@ -6,13 +6,15 @@ John C. Mitchell.
 *Concepts in Programming Languages*. 
 Cambridge University Press. 2002.
 
+[coqart]  
+Yves Bertot, Pierre Castéran. 
+[*Interactive Theorem Proving and Program Development*.](https://www.labri.fr/perso/casteran/CoqArt/)
+Springer. 2014.
+
 [davis]  
 Martin Davis, Ron Sigal, Elaine J. Weyuker. 
 *Computability, Complexity, and Languages, 2nd*. 
 Morgan Kaufmann. 1994.  
-
-[est]  
-Herbert B. Enderton. *Elements of Set Theory*. Academic Press. 1977.
 
 [sicp]  
 Harold Abelson, Gerald Jay Sussman and Julie Sussman. 
@@ -22,8 +24,3 @@ The MIT Press. 1996.
 [sf]  
 [Benjamin C. Pierce.](http://www.cis.upenn.edu/~bcpierce/)etc. 
 [*Software Fundations*.](http://www.cis.upenn.edu/~bcpierce/sf/current/index.html) 
-
-[st]  
-Thomas Jech. 
-*Set Theory*. 
-Springer. 2003.
