@@ -1,7 +1,8 @@
 
 
 
-(* Exercise 8.5 *)
+
+(** **** Exercise 8.5 *)
 
 Require Import List.
 Import ListNotations.
@@ -45,8 +46,10 @@ Proof.
     + apply wpbt; assumption.
 Qed.
 
+(** [] *)
 
-(* Exercise 8.6 *)
+
+(** **** Exercise 8.6 *)
 
 Inductive bin : Set :=
   | L : bin
@@ -72,9 +75,10 @@ Proof.
       * assumption.
 Qed.
 
+(** [] *)
 
 
-(* Exercise 8.7 *)
+(** **** Exercise 8.7 *)
 
 Fixpoint bin_to_string' (t:bin) : list  par :=
   match t with
@@ -96,3 +100,75 @@ Proof.
       * apply wpbt. assumption.
 Qed.
 
+(** [] *)
+
+
+
+
+(** * 8.3 Reasoning about Inductive Properties *)
+
+
+(** **** Exercise 8.11 *)
+
+Theorem lt_le : forall n p : nat, n < p -> n <= p.
+Proof.
+  intros n p H. unfold lt in H.
+Admitted.
+
+(** [] *)
+
+
+
+(** **** Exercise 8.14 *)
+
+Inductive le_diff (n m : nat) : Prop :=
+  le_d : forall x:nat, x + n = m -> le_diff n m.
+
+
+Theorem le_eq_deff : forall n m : nat, 
+  n <= m <-> le_diff n m.
+Proof.
+  intros n m. split.
+  - (* -> *)
+    intros H. elim H.
+    + apply (le_d n n 0). trivial.
+    + intros m' H' IH. 
+      destruct IH as [x' P].
+      apply (le_d n (S m') (S x')).
+      simpl. rewrite P. reflexivity.
+  - (* <- *)
+    intros [x P]. 
+    generalize dependent m.
+    generalize dependent n.
+    induction x as [|x'].
+    + intros n m H. simpl in H. rewrite H. apply le_n.
+    + intros n m H. simpl in H.
+      rewrite <- H. apply le_S.
+      apply IHx'. reflexivity.
+Qed.
+
+(** [] *)
+
+
+(** **** Exercise 8.15 *)
+
+Inductive le' : nat -> nat -> Prop :=
+  | le'_O_p : forall p : nat, le' 0 p
+  | le'_Sn_Sp : forall n p : nat, le' n p -> le' (S n) (S p).
+
+Theorem le_eq_le' : forall n m : nat,
+  le n m <-> le' n m.
+Proof.
+  split; intros H.
+  - induction H.
+    + elim n ; repeat constructor; assumption.
+    + induction IHle.
+      * constructor.
+      * constructor. apply IHIHle.
+        apply le_S_n. assumption.
+  - induction H.
+    + apply le_0_n.
+    + apply le_n_S. assumption.
+Qed.
+
+(** [] *)
