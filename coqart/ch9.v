@@ -1,3 +1,4 @@
+
 (* ** Chapter 9. Functions and their Specifications *)
 
 Require Export ZArith.
@@ -5,12 +6,6 @@ Require Export List.
 Require Export Arith.
 Require Export Omega.
 Require Export Zwf.
-
-Fixpoint mult2 (n:nat) : nat :=
-  match n with
-  | O => 0%nat
-  | S p => S (S (mult2 p))
-  end.
 
 Parameter prime : nat->Prop.
 
@@ -413,10 +408,6 @@ Fixpoint fib2 (n : nat) : nat*nat :=
   match n with
     | 0 => (1, 1)
     | S p => (snd (fib2 p), (fst (fib2 p)) + (snd (fib2 p)))
-(*     
- let (fp, fsp) := fib2 p
-             in (fsp, fp + fsp)
-*)
 end.
 
 Theorem fib_eq : forall n : nat, fib n = fst(fib2 n).
@@ -447,6 +438,91 @@ Proof.
  elim n; intuition.
 Qed.
 
+
+(** Exercise 9.9 *)
+
+Theorem nat_3_ind : forall P : nat -> Prop,
+  P 0 -> P 1 -> P 2 -> (forall n : nat, P n -> P (S (S (S n)))) 
+  -> forall n : nat, P n.
+Proof.
+  intros P H0 H1 H2 Hrec n.
+  cut (P n /\ P (S n) /\ P (S (S n))).
+  tauto.
+  elim n; intuition.
+Qed.
+
+(** [] *)
+
+
+(** Exercise 9.10 *)
+
+Theorem nat_fib_ind : forall P : nat -> Prop,
+  P 0 -> P 1 -> (forall n : nat, P n -> P (S n) -> P (S (S n)))
+  -> (forall n : nat, P n).
+Proof.
+  intros P H0 H1 Hrec n.
+  cut (P n /\ P (S n)).
+  tauto.
+  elim n; intuition.
+Qed.
+
+
+Lemma fib_ssn : forall n : nat, fib (S (S n)) = fib n + fib (S n).
+Proof.
+  intros n. auto.
+Qed.
+
+Lemma dp : forall n : nat, 2 * n = n + n.
+Proof.
+  induction n.
+  - trivial.
+  - simpl. rewrite <- plus_n_O. reflexivity.
+Qed.
+
+Create HintDb fibdb.
+Hint Resolve fib_ssn : fibdb.
+Hint Resolve dp : arith.
+
+Theorem fibthm : forall n p, 
+  fib (n+p+2) = (fib (n+1)) * (fib (p+1)) + (fib n) * (fib p).
+Proof.
+  intros n p.
+  induction n using nat_fib_ind.
+  - simpl. rewrite <- plus_n_O. 
+    rewrite <- plus_n_O.
+    rewrite plus_comm. 
+    rewrite plus_comm with (m:= (fib p)). 
+    rewrite plus_comm with (m:= 1).
+    auto.
+  - rewrite plus_comm with (m:=2).
+    rewrite plus_comm with (n:=p)(m:=1).
+    simpl plus at 1.
+    rewrite fib_ssn.
+    simpl (fib(1+1)). simpl (fib 1).
+    simpl (1+p). rewrite mult_1_l.
+    rewrite fib_ssn. 
+    rewrite dp. 
+    ring.
+  - rewrite <- plus_assoc with (n:=(S (S n))).
+    simpl (S _ + _).  
+    rewrite fib_ssn.
+    rewrite plus_assoc.
+    rewrite <- plus_Sn_m.
+    rewrite <- plus_Sn_m.
+    rewrite IHn. rewrite IHn0.
+    repeat rewrite fib_ssn.
+    repeat rewrite mult_plus_distr_r.
+    simpl (S _ + _).
+    ring.
+Qed.
+    
+(** [] *)
+
+
+(** Exercise 9.11 *)
+(** [] *)
+
+
 Fixpoint div2'_aux (n:nat) : nat*nat :=
   match n with
   | 0 => (0, 0)
@@ -454,6 +530,32 @@ Fixpoint div2'_aux (n:nat) : nat*nat :=
   end.
 
 Definition div2' (n:nat) : nat := fst (div2'_aux n).
+
+
+(** Exercise 9.12 *)
+
+Fixpoint mult2 (n:nat) : nat :=
+  match n with
+  | O => 0%nat
+  | S p => S (S (mult2 p))
+  end.
+
+Definition div2_mod2 : 
+  forall n:nat, {q:nat & {r:nat | n = 2*q + r /\ r <= 1}}.
+(* Define *)
+  intros n.
+  apply (existS _ (div2 n)).
+  apply (exist _ (mod2 n)).
+  split.
+  - apply mod2_ok.
+  - induction n using nat_2_ind; simpl.
+    + repeat constructor.
+    + repeat constructor.
+    + assumption.
+Defined.
+
+(** [] *)
+
 
 Fixpoint plus' (n m:nat){struct m} : nat :=
   match m with O => n | S p => S (plus' n p) 
@@ -494,6 +596,80 @@ Proof.
  intros p Hrec n0.
  trivial.
 Qed.
+
+
+(** Exercise 9.13 *)
+
+Theorem plus'_assoc : forall n m o : nat,
+  plus' (plus' n m) o = plus' n (plus' m o).
+Proof.
+  intros n m o. elim o.
+  - reflexivity.
+  - intros o' H.
+    simpl. rewrite H. reflexivity.
+Qed.
+
+(** [] *)
+
+
+(** Exercise 9.14 *)
+
+Theorem plus''_assoc : forall n m o : nat,
+  plus'' (plus'' n m) o = plus'' n (plus'' m o).
+Proof.
+  intros n m o. 
+  generalize dependent m.
+  generalize dependent n.
+  induction o as [|o']; intros n m.
+  - reflexivity.
+  - simpl. 
+    repeat rewrite <- plus''_Sn_m.
+    rewrite (IHo' n m).
+    simpl. rewrite <- plus''_Sn_m.
+    reflexivity.
+Qed.
+
+(** [] *)
+
+
+(** Exercise 9.15 *)
+
+Fixpoint fib_aux (a b n : nat) : nat :=
+  match n with
+    | 0 => a
+    | S p => fib_aux b (a+b) p
+  end.
+
+Definition fib_tr (n : nat) : nat :=
+  fib_aux 1 1 n.
+
+Lemma fib_aux_ssn : forall a b n : nat, 
+  fib_aux a b (S (S n)) = fib_aux a b n + fib_aux a b (S n).
+Proof.
+  intros a b n.
+  generalize dependent b.
+  generalize dependent a.
+  induction n.
+  - reflexivity.
+  - intros a b. simpl.
+    apply (IHn b (a+b)).
+Qed.
+
+Theorem fib_tr_eq : forall n : nat, fib n = fib_tr n.
+Proof.
+  induction n using nat_fib_ind.
+  - trivial.
+  - trivial.
+  - unfold fib_tr. 
+    rewrite fib_aux_ssn.
+    unfold fib_tr in *. 
+    rewrite fib_ssn.
+    rewrite IHn. rewrite IHn0.
+    reflexivity.
+Qed.
+    
+(** [] *)
+
 
 Open Scope Z_scope.
 
