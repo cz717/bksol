@@ -1,4 +1,3 @@
-
 (* ** Chapter 9. Functions and their Specifications *)
 
 Require Export ZArith.

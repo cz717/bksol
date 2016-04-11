@@ -1,12 +1,11 @@
-
-
 (** ** Chapter 8. Inductive Predicates *)
 
 Require Import List.
 Import ListNotations.
-
 Require Import Relations.
 Require Import Le.
+Require Import ZArith.
+
 Require Import ch5.
 
 (** **** Exercise 8.1 *)
@@ -390,35 +389,70 @@ Inductive inst : Set :=
 | Sequence : inst -> inst -> inst
 | WhileDo : bExp -> inst -> inst.
 
-Require Import ZArith.
-
 Variables 
 (state : Set)
 (update : state -> Var -> Z -> option state)
 (evalA : state -> aExp -> option Z)
 (evalB : state -> bExp -> option bool).
 
+Inductive exec : state->inst->state->Prop :=
+ | execSkip : forall s:state, exec s Skip s
+ | execAssign :
+    forall (s s1:state)(v:Var)(n:Z)(a:aExp),
+     evalA s a = Some n -> update s v n = Some s1 ->
+     exec s (Assign v a) s1
+ | execSequence :
+    forall (s s1 s2:state)(i1 i2:inst),
+     exec s i1 s1 -> exec s1 i2 s2 ->
+     exec s (Sequence i1 i2) s2
+ | execWhileFalse :
+    forall (s:state)(i:inst)(e:bExp),
+     evalB s e = Some false -> exec s (WhileDo e i) s
+ | execWhileTrue :
+    forall (s s1 s2:state)(i:inst)(e:bExp),
+     evalB s e = Some true ->
+     exec s i s1 ->
+     exec s1 (WhileDo e i) s2 ->
+     exec s (WhileDo e i) s2.
 
+Theorem HoareWhileRule :
+ forall (P:state->Prop)(b:bExp)(i:inst)(s s':state),
+   (forall s1 s2:state,
+      P s1 -> evalB s1 b = Some true -> exec s1 i s2 -> P s2)->
+   P s -> exec s (WhileDo b i) s' ->
+   P s' /\ evalB s' b = Some false.
+Proof.
+  intros P b i s s' H.
+  cut
+   (forall i':inst,
+     exec s i' s' ->
+     i' = WhileDo b i -> P s -> P s' /\ evalB s' b = Some false); 
+   eauto.
+  intros i' Hexec; elim Hexec; try (intros; discriminate).
+  intros s0 i0 e Heval Heq; injection Heq; intros H1 H2.
+  match goal  with
+  | id:(e = b) |- _ => rewrite <- id; auto
+  end.
+  intros;
+  match goal with
+   | id:(_ = _) |- _ => injection id; intros H' H''
+  end.
+  subst i0 b;eauto.
+Qed.
 
-(** **** Exercise 8.5 *)
-(** [] *)
+End little_semantics.
+  
 
+(** **** Exercise 8.28 *)
 
-(** **** Exercise 8.5 *)
-(** [] *)
+Theorem ns : ~ sorted nat le (1::3::2::nil).
+Proof.
+  unfold not. intros H.
+  inversion H.
+  inversion H4.
+  inversion H7.
+  inversion H11.
+  inversion H13.
+Qed.
 
-
-(** **** Exercise 8.5 *)
-(** [] *)
-
-
-(** **** Exercise 8.5 *)
-(** [] *)
-
-
-(** **** Exercise 8.5 *)
-(** [] *)
-
-
-(** **** Exercise 8.5 *)
 (** [] *)
