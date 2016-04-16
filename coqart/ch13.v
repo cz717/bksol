@@ -9,7 +9,39 @@ CoInductive LList (A:Set) : Set :=
 
 Implicit Arguments LNil [A].
 
-Check (LCons 1 (LCons 2 (LCons 3 LNil))).
+CoInductive LTree (A : Set) : Set :=
+   LLeaf :  LTree A
+ | LBin : A -> LTree A -> LTree A -> LTree A.
+
+Implicit Arguments LLeaf [A].
+
+
+(** Exercise 13.1 *)
+
+Fixpoint tol (A : Set)(l : list A) : LList A :=
+  match l with
+    | nil => LNil
+    | cons h t => LCons h (tol t)
+  end.
+
+Theorem tol_inj : forall (A : Set) (l0 l1 : list A), 
+  tol l0 = tol l1 -> l0 = l1.
+Proof. 
+  intros A l0.
+  induction l0 as [|h0 t0]; intros l1 H. 
+  - destruct l1. 
+    + reflexivity. 
+    + simpl in H. discriminate H. 
+  - destruct l1 as [|h1 t1].
+    + simpl in H. discriminate H. 
+    + simpl in H. injection H. 
+      intros H0 H1.
+      rewrite (IHt0 t1 H0).
+      rewrite H1. reflexivity. 
+Qed.
+
+(** [] *)
+
 
 Definition isEmpty (A:Set) (l:LList A) : Prop :=
   match l with
@@ -17,21 +49,17 @@ Definition isEmpty (A:Set) (l:LList A) : Prop :=
   | LCons a l' => False
   end.
 
-
 Definition LHead (A:Set) (l:LList A) : option A :=
   match l with
   | LNil => None 
   | LCons a l' => Some a
   end.
 
-
-
 Definition LTail (A:Set) (l:LList A) : LList A :=
   match l with
   | LNil => LNil 
   | LCons a l' => l'
   end.
-
 
 Fixpoint LNth (A:Set) (n:nat) (l:LList A) {struct n} : 
  option A :=
@@ -44,29 +72,71 @@ Fixpoint LNth (A:Set) (n:nat) (l:LList A) {struct n} :
   end.
 
 
+(** Exercise 13.2 *)
 
-Compute  (LNth 2 (LCons 4 (LCons 3 (LCons 90 LNil)))).
+Definition is_LLeaf (A : Set) (t : LTree A) : Prop := 
+  match t with
+    | LLeaf => True
+    | _ => False
+  end.
 
+Definition L_root (A : Set) (t : LTree A) := 
+  match t with
+    | LLeaf => False
+    | LBin _ _ _ => True
+  end.
+
+Definition L_left_son (A : Set) (t : LTree A) : option (LTree A) :=
+  match t with
+    | LLeaf => None
+    | LBin a l r => Some l
+  end. 
+
+Definition L_right_son (A : Set) (t : LTree A) : option (LTree A) :=
+  match t with
+    | LLeaf => None
+    | LBin a l r => Some r
+  end. 
+
+Inductive direction: Set := d0 (* left *) | d1 (* right *).
+Definition path : Set := list direction.
+
+Fixpoint L_subtree (A : Set) (t : LTree A) (p : path) : option (LTree A) :=
+  match p with
+    | nil => Some t
+    | cons d p' => 
+      match t with
+        | LLeaf => None
+        | LBin a l r => 
+            match d with
+              | d0 => (L_subtree l p')
+              | d1 => (L_subtree r p')
+            end
+      end
+  end.
+
+Fixpoint Ltree_label (A:Set)(t:LTree A)(p:path) : option A :=
+  match p with
+    | nil => match t with
+              | LLeaf => None
+              | LBin a l r => Some a
+            end
+    | cons d p' => match t with
+                    | LLeaf => None
+                    | LBin a l r => 
+                        match d with
+                          | d0 => Ltree_label l p'
+                          | d1 => Ltree_label r p'
+                        end
+                  end
+  end.
+
+(** []*)
 
 
 CoFixpoint from (n:nat) : LList nat := LCons n (from (S n)).
 
 Definition Nats : LList nat := from 0.
-
-
-Eval simpl in (isEmpty Nats).
-
-Eval cbv beta delta in (isEmpty Nats).
-
-Eval simpl in (from 3).
-
-Compute  (from 3).
-
-Eval simpl in (LHead (LTail (from 3))).
-
-Eval simpl in (LNth 19 (from 17)).
-
-
 
 CoFixpoint omega_repeat (A:Set) (a:A) : LList A := LCons a (omega_repeat a).
 
@@ -75,12 +145,6 @@ CoFixpoint LAppend (A:Set) (u v:LList A) : LList A :=
   | LNil => v
   | LCons a u' => LCons a (LAppend u' v)
   end.
-
-Compute  (LNth 123 (LAppend (omega_repeat 33) Nats)).
-
-Eval compute in
-  (LNth 123 (LAppend (LCons 0 (LCons 1 (LCons 2 LNil))) Nats)).
-
 
 CoFixpoint general_omega (A:Set) (u v:LList A) : LList A :=
   match v with
@@ -95,13 +159,39 @@ CoFixpoint general_omega (A:Set) (u v:LList A) : LList A :=
 Definition omega (A:Set) (u:LList A) : LList A := general_omega u u.
 
 
-Eval simpl in
-  (LNth 3
-     (LAppend (LCons 1 (LCons 2 LNil)) (LCons 3 (LCons 4 LNil)))).
+(** Exercise 13.3 *)
 
-Eval simpl in (omega_repeat 33).
+Require Import ZArith.
 
-Eval simpl in (LNth 15 (LAppend (omega_repeat 33) (omega_repeat 69))).
+CoFixpoint pfrom (p : positive) : LTree positive :=
+  LBin p (pfrom (xO p)) (pfrom (xI p)).
+
+Definition Pos := pfrom xH.
+
+(** [] *)
+
+
+(** Exercise 13.3 *)
+
+CoFixpoint graft (A:Set)(t t':LTree A) : LTree A :=
+  match t with
+    | LLeaf => t'
+    | LBin a l r => LBin a (graft l t') (graft r t')
+  end. 
+
+(** [] *)
+
+
+(** Exercise 13.4 *)
+
+CoFixpoint LMap (A B : Set)(f : A -> B)(l : LList A) : LList B :=
+  match l with
+    | LNil => LNil
+    | LCons h t => LCons (f h) (LMap f t)
+  end. 
+  
+(** [] *)
+
 
 Definition LList_decomp (A:Set) (l:LList A) : LList A :=
   match l with
@@ -109,13 +199,55 @@ Definition LList_decomp (A:Set) (l:LList A) : LList A :=
   | LCons a l' => LCons a l'
   end.
 
-Eval simpl in (LList_decomp (omega_repeat 33)).
-
-
 Lemma LList_decompose : forall (A:Set) (l:LList A), l = LList_decomp l.
 Proof.
  intros A l; case l; trivial.
 Qed.
+
+
+(** Exercise 13.6 *)
+
+Definition LTree_decomp (A:Set)(t:LTree A) : LTree A := 
+  match t with
+    | LLeaf => LLeaf
+    | LBin x l r => LBin x l r
+  end.
+
+Lemma LTree_decompose : forall (A:Set)(t:LTree A),
+  LTree_decomp t = t. 
+Proof. 
+  intros A t. 
+  destruct t; trivial. 
+Qed. 
+
+(** [] *)
+
+
+(** Exercise 13.7 *)
+
+Fixpoint LList_decomp_n (A:Set)(n:nat)(l:LList A) : LList A :=  
+  match n with
+    | 0 => l
+    | S p => match  l with
+              | LNil => LNil
+              | LCons h t => LCons h (LList_decomp_n p t)
+            end
+  end. 
+
+Theorem LList_decompose_n : forall (A:Set)(l:LList A)(n:nat), 
+  l = LList_decomp_n n l.
+Proof. 
+  intros A l n. 
+  generalize dependent l.
+  induction n as [|n']. 
+  - trivial. 
+  - intros l. destruct l. 
+    + trivial. 
+    + simpl. rewrite <- IHn'. 
+      reflexivity. 
+Qed. 
+
+(** [] *)
 
 
 Definition Squares_from :=
@@ -142,43 +274,7 @@ Eval simpl in
      (LAppend (LCons 1 (LCons 2 LNil)) (LCons 3 (LCons 4 LNil )))).
 
 
-Fixpoint LList_decomp_n (A:Set) (n:nat) (l:LList A) {struct n} : 
- LList A :=
-  match n with
-  | O => l
-  | S p =>
-      match LList_decomp l with
-      | LNil => LNil
-      | LCons a l' => LCons a (LList_decomp_n p l')
-      end
-  end.
-
-Eval simpl in
-  (LList_decomp_n 4
-     (LAppend (LCons 1 (LCons 2 LNil)) (LCons 3 (LCons 4 LNil)))).
-
-Eval simpl in (LList_decomp_n 12 Nats).
-
-Eval simpl in (LList_decomp_n 5 (omega (LCons 1 (LCons 2 LNil)))).
-
-Eval simpl in (LList_decomp (LAppend (LNil (A:=nat)) LNil)).
-
- Eval simpl in (LList_decomp (LAppend LNil (omega_repeat 33))). 
-
-Eval simpl in (LList_decomp (LAppend (omega_repeat 33) (omega_repeat 69))).
-
-Lemma LList_decompose_n :
- forall (A:Set) (n:nat) (l:LList A), l = LList_decomp_n n l.
-Proof.
- intros A n; elim n.  
- intro l; case l; try reflexivity.
- intros n0 H0 l; case l; try trivial. 
- intros a l0; simpl in |- *; rewrite <- H0; trivial.
-Qed.
-
-
 Ltac LList_unfold term := apply trans_equal with (1 := LList_decompose term).
-
 
 Lemma LAppend_LNil : forall (A:Set) (v:LList A), LAppend LNil v = v.
 Proof.
@@ -198,18 +294,80 @@ Qed.
  
 Hint Rewrite  LAppend_LNil LAppend_LCons : llists.
 
+
+(** Exercise 13.8 *)
+
 Lemma from_unfold : forall n:nat, from n = LCons n (from (S n)).
-Proof.
- intro n.
- LList_unfold (from n).
- simpl in |- *; trivial.
+Proof. 
+  intros n. 
+  LList_unfold (from n). destruct n; reflexivity. 
+Qed. 
+
+Lemma omega_repeat_unfold : forall (A:Set) (a:A), 
+  omega_repeat a = LCons a (omega_repeat a).
+Proof. 
+  intros A a.
+  LList_unfold (omega_repeat a). 
+  trivial. 
+Qed. 
+
+Lemma general_omega_LNil : forall A : Set, omega LNil = LNil (A:=A). 
+Proof. 
+  intros A. LList_unfold (@omega A LNil). trivial. 
+Qed. 
+
+Lemma general_omega_LCons : forall (A : Set) (a : A) (u v : LList A),
+  general_omega (LCons a u) v = LCons a (general_omega u v). 
+Proof. 
+  intros A a u v.
+  LList_unfold (general_omega (LCons a u) v). 
+  destruct v. 
+  - simpl. 
+    cut (general_omega u LNil = u). 
+    + intros H. rewrite H. reflexivity. 
+    + LList_unfold (general_omega u LNil). 
+      destruct u; trivial. 
+  - trivial. 
 Qed.
 
-
-Lemma omega_repeat_unfold : forall (A:Set) (a:A), omega_repeat a = LCons a (omega_repeat a).
-Proof.
- intros A a; LList_unfold (omega_repeat a); trivial.
+Lemma general_omega_LNil_LCons :
+  forall (A : Set) (a : A) (u : LList A),
+   general_omega LNil (LCons a u) = LCons a (general_omega u (LCons a u)). 
+Proof. 
+  intros A a u.
+  LList_unfold (general_omega LNil (LCons a u)). trivial. 
 Qed.
+
+Lemma general_omega_shoots_again : forall (A:Set) (v:LList A),
+  general_omega LNil v = general_omega v v. 
+Proof. 
+  intros A v. 
+  LList_unfold (general_omega LNil v). 
+  destruct v. 
+  - simpl. symmetry. 
+    LList_unfold (@general_omega A LNil LNil). trivial. 
+  - simpl. symmetry. 
+    LList_unfold (general_omega (LCons a v) (LCons a v)). trivial. 
+Qed. 
+    
+(** [] *)
+
+
+(** Exercise 13.9 *)
+
+Ltac LTree_unfold term :=
+  apply trans_equal with (1:= LTree_decompose term). 
+
+Lemma graft_LNil : forall (A : Set) (t : LTree A),
+  graft LLeaf  t = t. 
+Proof. 
+  intros A t. 
+  eapply eq_trans. 
+  - symmetry. apply (LTree_decompose (graft LLeaf t)). 
+  - destruct t; trivial. 
+Qed. 
+
+(** [] *)
 
 
 Inductive Finite (A:Set) : LList A -> Prop :=
@@ -229,7 +387,6 @@ Proof.
  intros A a l H; inversion H; assumption.
 Qed.
 
-
 Theorem LAppend_of_Finite :
  forall (A:Set) (l l':LList A),
    Finite l -> Finite l' -> Finite (LAppend l l').
@@ -237,6 +394,26 @@ Proof.
  intros A l l' H.
  induction H; autorewrite with llists  using auto with llists.
 Qed.
+
+
+(** Exercise 13.10 *)
+
+Theorem omega_of_Finite : forall (A : Set) (u : LList A),
+  Finite u -> omega u = LAppend u (omega u). 
+Proof.
+  intros A u H. 
+  induction H. 
+  - LList_unfold (@omega A LNil).
+    simpl. symmetry. 
+    LList_unfold (@LAppend A LNil (omega LNil)). trivial.
+  - destruct l. 
+    + LList_unfold (omega (LCons a LNil)). symmetry. 
+      LList_unfold (LAppend (LCons a LNil) (omega (LCons a LNil))). 
+      simpl. rewrite LAppend_LNil. 
+    
+    
+
+(** [] *)
 
 
 Lemma general_omega_LNil :
