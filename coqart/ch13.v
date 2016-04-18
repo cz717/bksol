@@ -356,7 +356,7 @@ Qed.
 (** Exercise 13.9 *)
 
 Ltac LTree_unfold term :=
-  apply trans_equal with (1:= LTree_decompose term). 
+  replace term with (LTree_decomp term); try apply LTree_decompose.
 
 Lemma graft_LNil : forall (A : Set) (t : LTree A),
   graft LLeaf  t = t. 
@@ -398,90 +398,64 @@ Qed.
 
 (** Exercise 13.10 *)
 
+Ltac LList_unfold_l :=
+  match goal with
+    | [ |- ?X1 = _] => LList_unfold X1
+  end.
+
+
+Lemma omega_general : forall (A : Set) (u : LList A),
+  omega u = general_omega u u. 
+Proof.
+  intros A u. unfold omega. reflexivity. 
+Qed.
+
+
+Lemma general_omega_of_Finite : forall (A:Set) (u:LList A),
+   Finite u ->
+   forall v:LList A, general_omega u v = LAppend u (general_omega v v).
+Proof.
+  intros A u H v. induction H. 
+  - rewrite LAppend_LNil.
+    exact (general_omega_shoots_again v). 
+  - rewrite general_omega_LCons. 
+    autorewrite with llists. 
+    rewrite <- IHFinite. reflexivity. 
+Qed. 
+
 Theorem omega_of_Finite : forall (A : Set) (u : LList A),
   Finite u -> omega u = LAppend u (omega u). 
 Proof.
-  intros A u H. 
-  induction H. 
-  - LList_unfold (@omega A LNil).
-    simpl. symmetry. 
-    LList_unfold (@LAppend A LNil (omega LNil)). trivial.
-  - destruct l. 
-    + LList_unfold (omega (LCons a LNil)). symmetry. 
-      LList_unfold (LAppend (LCons a LNil) (omega (LCons a LNil))). 
-      simpl. rewrite LAppend_LNil. 
-    
-    
+  intros A u H. unfold omega. 
+  apply (general_omega_of_Finite  H u). 
+Qed. 
 
 (** [] *)
 
 
-Lemma general_omega_LNil :
- forall (A:Set) (u:LList A), general_omega u LNil = u.
-Proof.
- intros A u.
- LList_unfold (general_omega u LNil).
- case u; simpl in |- *; auto.
-Qed.
+(** Exercise 13.11 *)
 
-Lemma omega_LNil : forall A:Set, omega (LNil (A:=A)) = LNil.
-Proof.
- intro A; unfold omega in |- *; apply general_omega_LNil. 
-Qed.
+Inductive Finite_LTree (A : Set) : LTree A -> Prop := 
+  | Finite_LLeaf : Finite_LTree LLeaf
+  | Finite_LBin : forall (a : A)(l r : LTree A), 
+                    Finite_LTree l -> Finite_LTree r -> Finite_LTree (LBin a l r). 
 
-Lemma general_omega_LCons :
- forall (A:Set) (a:A) (u v:LList A),
-   general_omega (LCons a u) v = LCons a (general_omega u v).
-Proof.
- intros A a u v.
- LList_unfold (general_omega (LCons a u) v); case v; simpl in |- *; auto.
- rewrite general_omega_LNil.
- trivial.
-Qed.
+Theorem graft_of_Finite : forall (A : Set) (t : LTree A),
+  Finite_LTree t -> graft t LLeaf = t. 
+Proof. 
+  intros A t H. 
+  induction H. 
+  - apply graft_LNil. 
+  - match goal with
+      | [ |- ?t = _] => replace t with (LTree_decomp t)
+    end. 
+    + simpl. rewrite IHFinite_LTree1. rewrite IHFinite_LTree2. reflexivity. 
+    + apply LTree_decompose. 
+Qed.  
 
+(** *)
 
 
-Lemma general_omega_LNil_LCons :
- forall (A:Set) (a:A) (u:LList A),
-   general_omega LNil (LCons a u) = LCons a (general_omega u (LCons a u)).
-Proof.
- intros A a u; LList_unfold (general_omega LNil (LCons a u)); trivial.
-Qed.
-
-Hint Rewrite  omega_LNil general_omega_LNil general_omega_LCons : llists.
-
-Lemma general_omega_shoots_again :
- forall (A:Set) (v:LList A), general_omega LNil v = general_omega v v.
-Proof.
- simple destruct v. 
- trivial.
- intros; autorewrite with llists  using trivial.
- rewrite general_omega_LNil_LCons.
- trivial.
-Qed.
-
-
-Lemma general_omega_of_Finite :
- forall (A:Set) (u:LList A),
-   Finite u ->
-   forall v:LList A, general_omega u v = LAppend u (general_omega v v).
-Proof.
- simple induction 1.
- intros; autorewrite with llists  using auto with llists. 
- rewrite general_omega_shoots_again.
- trivial.
- intros; autorewrite with llists  using auto.
- rewrite H1; auto.
-Qed.
-
-
-Theorem omega_of_Finite :
- forall (A:Set) (u:LList A), Finite u -> omega u = LAppend u (omega u).
-Proof.
- intros; unfold omega in |- *.
- apply general_omega_of_Finite; auto.
-Qed.
-  
 
 CoInductive Infinite (A:Set) : LList A -> Prop :=
     Infinite_LCons :
@@ -492,7 +466,7 @@ Hint Resolve Infinite_LCons: llists.
 (* manual proof (look at from_Infinite) *)
 Definition F_from :
   (forall n:nat, Infinite (from n)) -> forall n:nat, Infinite (from n).
- intros H n; rewrite (from_unfold n). 
+ intros H n. rewrite (from_unfold n). 
  split.
  auto.
 Defined.
@@ -513,9 +487,7 @@ Proof.
  split; auto.
 Qed.
 
-
 Print from_Infinite.
-
 
 Lemma from_Infinite_buggy : forall n:nat, Infinite (from n).
 Proof.
@@ -523,21 +495,107 @@ Proof.
  auto with llists.
 Abort.
 
-Lemma from_Infinite_saved : forall n:nat, Infinite (from n).
+
+(** Exercise 13.12 *)
+
+Lemma repeat_infinite : forall (A:Set) (a:A), Infinite (omega_repeat a).
+Proof. 
+  cofix H. 
+  intros A a. rewrite omega_repeat_unfold. 
+  split. auto. 
+Qed. 
+
+Lemma general_omega_infinite : forall (A : Set) (a : A) (u v : LList A),
+  Infinite (general_omega v (LCons a u)). 
+Proof. 
+  cofix H. intros A a u v. 
+  destruct v. 
+  - rewrite general_omega_LNil_LCons. 
+    split. auto. 
+  - match goal with
+      | [ |- Infinite ?t] => replace t with (LList_decomp t)
+    end. 
+    + simpl. split. auto. 
+    + rewrite LList_decompose; reflexivity. 
+Qed. 
+
+Theorem omega_infinite : forall (A : Set) (a : A) (l : LList A),
+  Infinite (omega (LCons a l)). 
+Proof. 
+  intros A a l. 
+  rewrite omega_general. 
+  apply general_omega_infinite. 
+Qed. 
+
+(** [] *)
+
+
+(** Exercise 13.13 *)
+
+Inductive BugInfinite (A : Set) : LList A -> Prop := 
+  BugInfinite_intro : forall (a : A)(l : LList A),
+    BugInfinite l -> BugInfinite (LCons a l). 
+
+Theorem BugInfinite_False : forall (A : Set)(l : LList A), ~BugInfinite l.
+Proof. 
+  
+Admitted.  
+
+(** [] *)
+
+
+(** Exercise 13.14 *)
+
+CoInductive ExistBranchInfinite (A : Set) : LTree A -> Prop :=
+  | EBI_intro_l : forall a l r, ExistBranchInfinite l -> ExistBranchInfinite (LBin a l r)
+  | EBI_intro_r : forall a l r, ExistBranchInfinite r -> ExistBranchInfinite (LBin a l r).
+
+CoInductive AllBranchInfinite (A : Set) : LTree A -> Prop :=
+  | ABI_intro : forall a l r, AllBranchInfinite l -> AllBranchInfinite r ->
+                         AllBranchInfinite (LBin a l r).
+
+Inductive ExistBranchFinite (A : Set) : LTree A -> Prop := 
+  | EBF_Leaf : ExistBranchFinite LLeaf
+  | EBF_Bin_l : forall a l r, ExistBranchFinite l -> ExistBranchFinite (LBin a l r)
+  | EBF_Bin_r : forall a l r, ExistBranchFinite r -> ExistBranchFinite (LBin a l r).
+
+Inductive AllBranchFinite (A : Set) : LTree A -> Prop := 
+  | ABF_Leaf : AllBranchFinite LLeaf
+  | ABF_Bin  : forall a l r, AllBranchFinite l -> AllBranchFinite r ->
+                        AllBranchFinite (LBin a l r). 
+
+CoFixpoint treeall (n : nat) : LTree nat := 
+  LBin n (treeall n) (treeall n).
+
+Example ABI_Example : AllBranchInfinite (treeall 0).
 Proof.
- cofix H.
- auto with llists.
- Undo.
- intro n; rewrite (from_unfold n).
- split; auto.
+  cofix H. 
+  match goal with
+    | [  |- AllBranchInfinite ?t ] => LTree_unfold t
+  end.
+  - simpl. split; auto.
 Qed.
 
-Lemma omega_repeat_infinite : forall (A:Set) (a:A), Infinite (omega_repeat a).
+Example EBI_Example : ExistBranchInfinite (LBin 0 LLeaf (treeall 0)).
 Proof.
- intros A a; cofix H.
- rewrite (omega_repeat_unfold a).
- auto with llists.
+  apply EBI_intro_r.
+  cofix H.
+  match goal with
+    | [  |- ExistBranchInfinite ?t ] => LTree_unfold t
+  end.
+  - simpl. constructor; auto.
 Qed.
+
+Axiom class : forall P:Prop , ~~P -> P.
+
+Theorem NEBF_EBI : forall (A : Set)(t : LTree A),
+  ~ ExistBranchFinite t -> ExistBranchInfinite t.
+Proof.
+
+Admitted.  
+
+(** [] *)
+
 
 
 Lemma LNil_not_Infinite : forall A:Set, ~ Infinite (LNil (A:=A)).
@@ -545,54 +603,136 @@ Proof.
  intros A H;  inversion H. 
 Qed.
 
+
+(** Exercise 13.15 *)
+
 Lemma Infinite_of_LCons :
   forall (A:Set) (a:A) (u:LList A), Infinite (LCons a u) -> Infinite u.
 Proof.
-  intros A a u H; inversion H; auto.
+  intros A a u H. inversion H. assumption.
 Qed.
  
-Lemma LAppend_of_Infinite :
-  forall (A:Set) (u:LList A),
+Lemma LAppend_of_Infinite : forall (A:Set) (u:LList A),
     Infinite u -> forall v:LList A, Infinite (LAppend u v).
 Proof.
- intro A; cofix H.
- simple destruct u.
- intro H0; inversion H0.
- intros a l H0 v.
- autorewrite with llists  using auto with llists. 
- split.
- apply H.
- inversion H0; auto.
+  cofix H0.
+  intros A u H v. 
+  inversion H. 
+  rewrite LAppend_LCons. 
+  constructor. 
+  apply H0. assumption.
 Qed.
 
 Lemma Finite_not_Infinite :
  forall (A:Set) (l:LList A), Finite l -> ~ Infinite l.
 Proof.
- simple induction 1.
- unfold not in |- *; intro H0; inversion_clear H0. 
- unfold not at 2 ; intros a l0 H1 H2 H3.
- inversion H3; auto.
+  intros A l F I.
+  induction F. 
+  - inversion I. 
+  - inversion I. apply (IHF H0).
 Qed.
-
 
 Lemma Infinite_not_Finite :
   forall (A:Set) (l:LList A), Infinite l -> ~ Finite l.
 Proof.
- unfold not in |- *; intros.
- absurd (Infinite l); auto.
- apply Finite_not_Infinite; auto.
+  intros A l H F. 
+  induction F. 
+  - inversion H. 
+  - apply IHF. inversion H. assumption.
 Qed.
 
 Lemma Not_Finite_Infinite :
   forall (A:Set) (l:LList A), ~ Finite l -> Infinite l.
 Proof.
- cofix H.
- simple destruct l.
- intros; absurd (Finite (LNil (A:=A))); auto with llists.
- split.
- apply H; unfold not in |- *; intro H1.
- apply H0; auto with llists.
+  cofix H. 
+  intros A l H0. destruct l. 
+  - elim H0. constructor.
+  - split. apply H. 
+    intros H1. apply H0. constructor; assumption.
 Qed.
+
+(** [] *)
+
+
+(** Exercise 13.16 *)
+
+Require Import Classical.
+
+Lemma Not_Infinite_Finite : forall (A : Set)(l : LList A),
+  ~ Infinite l -> Finite l.
+Proof.
+  intros A l H. apply NNPP.
+  intros NF. apply H. apply Not_Finite_Infinite. assumption.
+Qed.
+
+Lemma Finite_or_Infinite : forall (A : Set)(l : LList A),
+  Finite l \/ Infinite l.
+Proof.
+  intros A l.
+  destruct (classic (Finite l)). 
+  - left; assumption.
+  - right; apply Not_Finite_Infinite; assumption.
+Qed.
+
+(** [] *)
+
+(** Exercise 13.17 *)
+
+Definition Infinite_ok (A:Set) (X:LList A -> Prop) :=
+  forall l:LList A,  X l -> 
+  exists a : A, ( exists l' : LList A, l = LCons a l' /\ X l').
+ 
+Definition Infinite1 (A:Set) (l:LList A) :=
+   exists X : LList A -> Prop , Infinite_ok X /\ X l.
+
+
+Lemma Inf_ok : forall (A : Set), @Infinite_ok A (@Infinite A).
+Proof.
+  unfold Infinite_ok. intros A l H.
+  inversion H. exists a. exists l0. 
+  split; trivial.
+Qed.
+
+
+Lemma Inf_Inf1 : forall (A : Set)(l : LList A),
+  Infinite l -> Infinite1 l. 
+Proof.
+  intros A l H.
+  unfold Infinite1. 
+  exists (@Infinite A). split.
+  - apply Inf_ok.
+  - assumption.
+Qed.
+
+Lemma Inf1_Cons : forall (A : Set)(a : A)(l : LList A),
+  Infinite1 (LCons a l) -> Infinite1 l.
+Proof.
+  intros A a l H.
+  unfold Infinite1 in H. destruct H as [X [H0 H1]]. 
+  unfold Infinite_ok in H0. 
+  destruct (H0 (LCons a l) H1) as [a' [l' [H2 H3]]]. 
+  unfold Infinite1. exists X. split.
+  - unfold Infinite_ok. assumption. 
+  - inversion H2. assumption. 
+Qed.
+  
+
+Lemma Inf1_Inf : forall (A : Set)(l : LList A),
+  Infinite1 l -> Infinite l.
+Proof.
+  cofix H. intros A l H0.
+  destruct l. 
+  - unfold Infinite1 in H0. 
+    unfold Infinite_ok in H0. 
+    destruct H0 as [X [H1 H2]].
+    destruct (H1 LNil H2) as [a [l' [H3 H4]]]. 
+    inversion H3. 
+  - constructor. apply (H A l (Inf1_Cons H0)).
+Qed.  
+  
+(** [] *)
+
+
 
 Lemma general_omega_infinite :
  forall (A:Set) (a:A) (u v:LList A), Infinite (general_omega v (LCons a u)).
