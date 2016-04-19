@@ -349,6 +349,11 @@ Proof.
   - simpl. symmetry. 
     LList_unfold (general_omega (LCons a v) (LCons a v)). trivial. 
 Qed. 
+
+Hint Rewrite general_omega_LNil 
+             general_omega_LCons
+             general_omega_LNil_LCons
+             general_omega_shoots_again : llists. 
     
 (** [] *)
 
@@ -606,8 +611,7 @@ Qed.
 
 (** Exercise 13.15 *)
 
-Lemma Infinite_of_LCons :
-  forall (A:Set) (a:A) (u:LList A), Infinite (LCons a u) -> Infinite u.
+Lemma Infinite_of_LCons :  forall (A:Set) (a:A) (u:LList A), Infinite (LCons a u) -> Infinite u.
 Proof.
   intros A a u H. inversion H. assumption.
 Qed.
@@ -693,7 +697,6 @@ Proof.
   split; trivial.
 Qed.
 
-
 Lemma Inf_Inf1 : forall (A : Set)(l : LList A),
   Infinite l -> Infinite1 l. 
 Proof.
@@ -733,24 +736,6 @@ Qed.
 (** [] *)
 
 
-
-Lemma general_omega_infinite :
- forall (A:Set) (a:A) (u v:LList A), Infinite (general_omega v (LCons a u)).
-Proof.
- intros A a; cofix H.
- simple destruct v.
- rewrite general_omega_LNil_LCons; split; auto.
- intros a0 l. 
- autorewrite with llists  using auto with llists.
-Qed.
-
-Lemma omega_infinite :
-  forall (A:Set) (a:A) (l:LList A), Infinite (omega (LCons a l)).
-Proof.
- unfold omega in |- *. 
- intros; apply general_omega_infinite.
-Qed.
-
 Lemma Lappend_of_Infinite_0 :
  forall (A:Set) (u:LList A), Infinite u -> forall v:LList A, u = LAppend u v.
 Proof.
@@ -771,159 +756,182 @@ CoInductive bisimilar (A:Set) : LList A -> LList A -> Prop :=
 
  Hint Resolve bisim0 bisim1: llists.
 
-Lemma bisimilar_inv_1 :
- forall (A:Set) (a a':A) (u u':LList A),
-   bisimilar (LCons a u) (LCons a' u') -> a = a'.
-Proof.
- intros A a a' u u' H.
- inversion H; trivial.
-Qed.
 
-Lemma bisimilar_inv_2 :
- forall (A:Set) (a a':A) (u u':LList A),
-   bisimilar (LCons a u) (LCons a' u') -> bisimilar u u'.
-Proof.
- intros A a a' u u' H.
- inversion H; auto.
-Qed.
+
+(** Exercise 13.19 *)
 
 Require Import Relations.
 
-Lemma bisimilar_refl : forall A:Set, reflexive _ (bisimilar (A:=A)).
+Lemma bisimilar_refl : forall A:Set, reflexive _ (@bisimilar A).
 Proof.
- unfold reflexive in |- *; cofix H.
- intros A u; case u; [ left | right ].
- apply H.
+  intros A. unfold reflexive. 
+  cofix H. intros x. destruct x. 
+    + apply bisim0. 
+    + constructor. apply H. 
 Qed.
 
-Hint Resolve bisimilar_refl: llists.
-
-Lemma bisimilar_sym : forall A:Set, symmetric _ (bisimilar (A:=A)).
+Lemma bisimilar_trans : forall A : Set, transitive (LList A) (@bisimilar A).
 Proof.
- unfold symmetric in |- *; intro A; cofix H.
- simple destruct x; simple destruct y.
- auto with llists.
- intros a l H0; inversion H0.
- intro H0; inversion H0.
- intros a0 l0 H1; inversion H1. 
- right; auto.
-Qed.
- 
-Lemma bisimilar_trans : forall A:Set, transitive _ (bisimilar (A:=A)).
-Proof.
- unfold transitive in |- *; intro A; cofix H.
- simple destruct x.
- simple destruct y.
- auto.
- intros a l w H0; inversion H0.
- simple destruct y.
- intros w H0; inversion H0.
- intros a0 l0 w H0 H1.
- inversion_clear H1.
- inversion_clear H0.
- right.
- eapply H; eauto.
+  intro A. unfold transitive. 
+  cofix. intros x y z Hxy Hyz.
+  inversion Hxy. 
+  + inversion Hyz. 
+    * constructor. 
+    * rewrite <- H0 in H2. inversion H2. 
+  + inversion Hyz. 
+    * rewrite <- H2 in H1. inversion H1. 
+    * rewrite <- H1 in H3. 
+      injection H3. intros H5 H6. rewrite H6.
+      constructor. rewrite H5 in H2.
+      apply bisimilar_trans with (y:=l'); assumption. 
 Qed.
 
-Theorem bisimilar_equiv : forall A:Set, equiv _ (bisimilar (A:=A)).
-Proof.
- split.
- apply bisimilar_refl.
- split. 
- apply bisimilar_trans.
- apply bisimilar_sym.
+Lemma bisimilar_sym : forall A : Set, symmetric (LList A) (@bisimilar A).
+Proof. 
+  intros A. unfold symmetric. 
+    cofix H. intros x y H0.
+    inversion H0. 
+    + constructor. 
+    + constructor. apply H; assumption.
 Qed.
+
+
+Theorem bisimilar_equiv : forall (A:Set), equiv (LList A) (@bisimilar  A).
+Proof.
+  intros A. unfold equiv. repeat split. 
+  apply bisimilar_refl. 
+  apply bisimilar_trans. 
+  apply bisimilar_sym.
+Qed.
+
+(** [] *)
+
+
+(** Exercise 13.20 *)
+
+Lemma bisimilar_LNth :
+ forall (A:Set) (n:nat) (u v:LList A), bisimilar u v -> LNth n u = LNth n v.
+Proof.
+  intros A n. 
+  induction n; intros u v H. 
+  - inversion H; reflexivity. 
+  - inversion H. 
+    + reflexivity. 
+    + simpl. apply IHn. assumption. 
+Qed.
+
+Lemma LNth_bisimilar : forall (A:Set) (u v:LList A),
+   (forall n:nat, LNth n u = LNth n v) -> bisimilar u v.
+Proof.
+  cofix H.
+  intros A u v H0.
+  destruct  u. 
+  - destruct v. 
+    + constructor. 
+    + discriminate (H0 0).
+  - destruct v. 
+    + discriminate (H0 0).
+    + injection (H0 0). intros H1. 
+      rewrite <- H1. constructor. 
+      apply H. intros n.  apply (H0 (S n)).
+Qed.
+
+(** [] *)
+
+
+(** Exercise 13.21 *)
 
 Theorem bisimilar_of_Finite_is_Finite :
  forall (A:Set) (l:LList A),
    Finite l -> forall l':LList A, bisimilar l l' -> Finite l'.
 Proof.
- simple induction 1.
- simple destruct l'.
- auto with llists.
- intros a l0 H1; inversion H1.
- simple destruct l'.
- intro H2; inversion H2.
- intros a0 l1 H2; inversion H2; auto with llists.
+  intros A l F.
+  induction F; intros l' B.
+  - inversion B. constructor. 
+  - inversion B. constructor. 
+    apply (IHF l'0); assumption. 
 Qed.
-
-
 
 Theorem bisimilar_of_Infinite_is_Infinite :
  forall (A:Set) (l:LList A),
    Infinite l -> forall l':LList A, bisimilar l l' -> Infinite l'.
 Proof.
- intro A; cofix H.
- simple destruct l.
- intro H0; inversion H0.
- simple destruct l'.
- intro H1; inversion H1.
- split.
- apply H with l0.
- apply Infinite_of_LCons with a.
- assumption.
- inversion H1; auto.
+  cofix H. 
+  intros A l Inf. intros l' B. 
+  inversion B. 
+  - rewrite <- H0 in Inf. inversion Inf. 
+  - constructor. apply (H A l0). 
+    + inversion Inf. rewrite <- H1 in H4. 
+      injection H4. intros H5 H6. 
+      rewrite <- H5. assumption. 
+    + assumption. 
 Qed.
 
+(** [] *)
 
-Theorem bisimilar_of_Finite_is_eq :
- forall (A:Set) (l:LList A),
+
+(** Exercise 13.22 *)
+
+Theorem bisimilar_of_Finite_is_eq : forall (A:Set) (l:LList A),
    Finite l -> forall l':LList A, bisimilar l l' -> l = l'.
 Proof.
- simple induction 1.
- intros l' H1; inversion H1; auto.
- simple destruct l'.
- intro H2; inversion H2.
- intros a0 l1 H2; inversion H2; auto with llists.
- rewrite (H1 l1); auto.
+  intros A l F. 
+  induction F; intros l' B. 
+  - inversion B. trivial. 
+  - inversion B. cut (l = l'0). 
+    + intros H3. rewrite H3. reflexivity. 
+    + apply IHF. assumption. 
 Qed.
 
+(** [] *)
 
 
-      
+(** Exercise 13.23 *)
 
-Lemma bisimilar_LNth :
- forall (A:Set) (n:nat) (u v:LList A), bisimilar u v -> LNth n u = LNth n v.
+CoInductive LTree_bisimilar (A : Set) : LTree A -> LTree A -> Prop :=
+  | bismt0 : LTree_bisimilar LLeaf LLeaf 
+  | bismt1 : forall a l1 r1 l2 r2, LTree_bisimilar l1 l2 -> LTree_bisimilar r1 r2 ->
+                              LTree_bisimilar (LBin a l1 r1) (LBin a l2 r2).
+
+Fixpoint LPth (A : Set) (p : positive) (t : LTree A) {struct p} : option A :=
+  match t with
+    | LLeaf => None
+    | LBin a l r => match p with
+                     | xH => Some a
+                     | xO p' => LPth p' l
+                     | xI p' => LPth p' r
+                   end
+  end. 
+
+Lemma bisimilar_LPth : forall (A : Set) (p : positive) (t s : LTree A),
+  LTree_bisimilar t s -> LPth p t = LPth p s.
 Proof.
- simple induction n.
- simple destruct u; simple destruct v.
- intros; simpl in |- *; trivial.
- intros a l H; inversion H.
- intro H; inversion H.
- intros a0 l0 H; inversion H; simpl in |- *; trivial.
- simple destruct u; simple destruct v.
- intros; simpl in |- *; trivial.
- intros a l H0; inversion H0.
- intro H0; inversion H0.
- simpl in |- *; auto.
- intros a0 l0 H0; inversion_clear H0.
- auto.
+  intros A p.
+  induction p; intros t s H.
+  - destruct t; destruct s; try (inversion H; trivial).
+    simpl. apply IHp. assumption. 
+  - destruct t; destruct s; try (inversion H; trivial).
+    simpl. apply IHp. assumption.
+  - destruct t; destruct s; try (inversion H; trivial). 
+Qed.    
+
+Lemma LPth_bisimilar : forall (A : Set)(t s : LTree A),
+  (forall p : positive, LPth p t = LPth p s) -> LTree_bisimilar t s. 
+Proof. 
+  cofix H. intros A t s H0. 
+  destruct t; destruct s. 
+  - constructor. 
+  - discriminate (H0 1%positive). 
+  - discriminate (H0 1%positive). 
+  - injection (H0 1%positive). intros H1.
+    rewrite <- H1. 
+    constructor. 
+    + apply H. intros p. apply (H0 (xO p)).
+    + apply H. intros p. apply (H0 (xI p)). 
 Qed.
 
+(** [] *)
 
-Lemma LNth_bisimilar :
- forall (A:Set) (u v:LList A),
-   (forall n:nat, LNth n u = LNth n v) -> bisimilar u v.
-Proof.
- intro A; cofix H.
- simple destruct u; simple destruct v.
- left.
- intros a l H1.
- generalize (H1 0); discriminate 1.
- intro H1.
- generalize (H1 0); discriminate 1.
- intros.
- generalize (H0 0); simpl in |- *.
- injection 1.
- simple induction 1.
- right.
- Guarded.
- apply H.
- intro n.
- generalize (H0 (S n)).
- simpl in |- *. 
- auto.
-Qed.
 
 Lemma LAppend_assoc :
  forall (A:Set) (u v w:LList A),
@@ -934,39 +942,79 @@ Proof.
  apply bisimilar_refl.
 Qed.
 
-Lemma LAppend_of_Infinite_eq :
-  forall (A:Set) (u:LList A),
+
+(** Exercise 13.24 *)
+
+Lemma LAppend_of_Infinite_bisim : forall (A:Set) (u:LList A),
     Infinite u -> forall v:LList A, bisimilar u (LAppend u v).
 Proof.
- intro A; cofix H.
- simple destruct u.
- intro H0; inversion H0.
- intros; autorewrite with llists using auto with llists. 
- right.
- apply H.
- apply Infinite_of_LCons with a.
- assumption.
+  intro A. cofix H.
+  intros u H0 v. inversion H0. 
+  rewrite LAppend_LCons. constructor. 
+  apply H. assumption. 
 Qed.
 
-Lemma general_omega_lappend :
-  forall (A:Set) (u v:LList A),
+(** [] *)
+
+
+(** Exercise 13.25 *)
+
+Lemma eq_bisimilar : forall (A : Set) (u v : LList A),
+  u = v -> bisimilar u v. 
+Proof. 
+  intros A. cofix H. 
+  intros u v E. 
+  destruct u; destruct v. 
+  - constructor.
+  - inversion E. 
+  - inversion E. 
+  - inversion E. rewrite <- H1. 
+    constructor. apply H. reflexivity. 
+Qed. 
+ 
+Lemma general_omega_lappend : forall (A:Set) (u v: LList A),
     bisimilar (general_omega v u) (LAppend v (omega u)).
 Proof.
- intro A; cofix H.
- simple destruct v.
- autorewrite with llists  using auto with llists.
- rewrite general_omega_shoots_again.
- unfold omega in |- *; auto with llists.
- intros; autorewrite with llists  using auto with llists.
- apply bisimilar_refl.
- intros; autorewrite with llists  using auto with llists.
+  intro A. cofix H. 
+  intros u v. destruct v. 
+  - destruct u. 
+    + rewrite <- omega_general. 
+      rewrite general_omega_LNil. 
+      rewrite LAppend_LNil. constructor. 
+    + rewrite general_omega_LNil_LCons. 
+      unfold omega. rewrite LAppend_LNil. 
+      rewrite general_omega_LCons. 
+      constructor. apply eq_bisimilar. reflexivity. 
+  - destruct u. 
+    + rewrite general_omega_LCons. 
+      rewrite LAppend_LCons. constructor. apply H. 
+    + autorewrite with llists. constructor. apply H. 
 Qed.
 
 Lemma omega_lappend :
  forall (A:Set) (u:LList A), bisimilar (omega u) (LAppend u (omega u)).
 Proof.
- intros; unfold omega at 1 in |- *; apply general_omega_lappend.
+  intros A u. unfold omega. apply general_omega_lappend. 
 Qed.
+
+(** [] *)
+
+
+(** Exercise 13.26 *)
+
+Lemma graft_of_Infinite_bisim : forall (A : Set)(t t' : LTree A),
+  AllBranchInfinite t -> LTree_bisimilar t (graft t t'). 
+Proof. 
+  intros A. cofix H. 
+  intros t t' H0. inversion H0. 
+  match goal with
+    | [ |- _ _ ?t ] => LTree_unfold t
+  end. simpl. 
+  constructor; apply H; assumption. 
+Qed.
+  
+(** [] *)
+
 
 Definition bisimulation (A:Set) (R:LList A -> LList A -> Prop) :=
   forall l1 l2:LList A,
@@ -979,30 +1027,29 @@ Definition bisimulation (A:Set) (R:LList A -> LList A -> Prop) :=
          | LCons b l'2 => a = b /\ R l'1 l'2
          end
      end.
- 
-Theorem park_principle :
-  forall (A:Set) (R:LList A -> LList A -> Prop),
+
+
+(** Exercise 13.27 *) 
+
+Theorem park_principle : forall (A:Set) (R:LList A -> LList A -> Prop),
     bisimulation R -> forall l1 l2:LList A, R l1 l2 -> bisimilar l1 l2. 
 Proof.
- intros A R bisim; cofix H.
- intros l1 l2; case l1; case l2.
- left.
- intros a l H0.
- unfold bisimulation in bisim.
- generalize (bisim _ _ H0).
- intro H1; discriminate H1.
- intros a l H0.
- unfold bisimulation in bisim.
- generalize (bisim _ _ H0).
- simple induction 1.
- intros a l a0 l0 H0. 
- generalize (bisim _ _ H0).
- simple induction 1.
- simple induction 1.
- right.
- apply H.
- assumption.
+  intros A R B. unfold bisimulation in B. 
+  cofix H. intros l1 l2 H0.
+  destruct l1. 
+  - destruct l2. 
+    + constructor. 
+    + discriminate (B LNil (LCons a l2) H0). 
+  - destruct l2. 
+    + elim (B (LCons a l1) LNil H0).
+    + destruct (B (LCons a l1) (LCons a0 l2) H0) as [E H1]. 
+      rewrite <- E. constructor. apply H. assumption. 
 Qed.
+
+(** [] *)
+
+
+(** Exercise 13.28 *) 
 
 CoFixpoint alter  : LList bool := LCons true (LCons false alter).
 
@@ -1015,30 +1062,20 @@ Definition R (l1 l2:LList bool) : Prop :=
 
 Lemma R_bisim : bisimulation R.
 Proof.
- unfold R, bisimulation in |- *.
- repeat simple induction 1.
- rewrite H1; rewrite H2; simpl in |- *.
- split; auto.
- right; split; auto.
- rewrite general_omega_LCons. 
- unfold alter2, omega in |- *; trivial.
- rewrite general_omega_shoots_again; trivial.
- rewrite H1; rewrite H2; simpl in |- *.
- split; auto.
+  unfold bisimulation. 
+  intros l1 l2 H. unfold R in H. 
+  destruct H as [[H0 H1]| [H0 H1]]. 
+  - rewrite H0; rewrite H1. simpl. 
+    split. reflexivity. 
+    rewrite general_omega_LCons. 
+    rewrite general_omega_shoots_again. 
+    rewrite <- omega_general. fold alter2. 
+    right. auto. 
+  - rewrite H0; rewrite H1. 
+    split; [reflexivity | left; auto].
 Qed.
 
-Lemma R_useful : R alter alter2.
-Proof.
- left; auto.
-Qed.
-
-Lemma final : bisimilar alter alter2.
-Proof. 
- apply park_principle with R.
- apply R_bisim.
- apply R_useful.
-Qed.
-
+(** [] *)
 
 
 (* LTL operators *)
