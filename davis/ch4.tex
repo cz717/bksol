@@ -171,17 +171,13 @@ Admit.
 
 
 \subsection{}
-Let $ g(x) \Leftrightarrow (\exists t\in N)f(t)=x $, then it's computed by
-following program:
+Since $ f(x) $ is strictly incresing, for all $n$ we have $ f(n) \ge n $.
+so
 \begin{align*}
-  [A]\ & \text{IF } f(Z)=X \text{ GOTO } B \\
-       & \text{IF } f(Z)>X \text{ GOTO } E \\
-       & Z \gets Z + 1 \\
-       & \text{GOTO } A \\
-  [B]\ & Y \gets Y + 1 \\
+  g(x) & \Leftrightarrow  (\exists t)f(t)=x \\
+       & \Leftrightarrow  (\exists t)_{\le x}f(t)=x
 \end{align*}
-Since $ f(x)\ge x $, this program always halts when or before $Z$ growing
-to $X$. So, it's both partially computable and total.
+is computable.
 
 
 \subsection{}
@@ -207,17 +203,31 @@ is an infinite subset of $A$, and, by last exercise, is recursive.
 
 
 \subsection{}
-Abort.
+Let $ A = \{ g(x) | x \in N \} $, where $ g(x) $ is computable.
+Then following program computes a one-one function $ f(x) $ which
+has same range with $g(x)$.
+\begin{center}
+\begin{tabular}{ll}
+        & IF $ X \neq 0 $ GOTO $A$ \\
+        & GOTO $B$ \\
+  $[A]$ & $ Z \gets Z + 1 $ \\
+        & IF $ (\exists t)_{< Z}g(t)=g(Z) $ GOTO $A$ \\
+        & $ X \gets X - 1 $ \\
+        & IF $ X \neq 0 $ GOTO $A$ \\
+  $[B]$ & $ Y \gets g(Z) $
+\end{tabular}
+\end{center}
 
 
 \subsection{}
 \begin{enumerate}
   \item 
-  $K$ and $\overline{K}$ are two sets, and $ K \bigcup \overline{K} = N $. $N$ is evidently
-  r.e., but $ \overline{K} $ is not.
-  
+    $K$ and $\overline{K}$ are two sets,
+    and $ K \bigcup \overline{K} = N $. $N$ is evidently r.e.,
+    but $ \overline{K} $ is not.
+
   \item 
-  $ \overline{K} \subseteq N $.S
+    $ \overline{K} \subseteq N $.
 \end{enumerate}
 
 \subsection{}

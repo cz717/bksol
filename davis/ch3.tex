@@ -80,11 +80,14 @@ Admit.
 
 
 \subsection{}
-\[\ f(x) = h(x, x) \]
-where $h(x,y)$ is primitive recursive :
 \begin{align*}
-  h(x, 0)   & = 1 \\
-  h(x, t+1) & = {h(x, t)}^{x} \\
+  f(0)   & = 0 \\
+  f(t+1) & = g(t+1, t) \\
+\end{align*}
+where
+\begin{align*}
+  g(x, 0)   & = x \\
+  g(x, t+1) & = {g(x, t)}^{x} \\
 \end{align*}
 
 
@@ -162,7 +165,7 @@ Since the latter can't be a predicate(whose value are 0 or 1), it must be the fo
 \[ \pi(x) = \sum_{t=0}^{x}{Prime(t)} \]
 
 \subsection{}
-\[ SQSM(x) = (\exists v)_{\le x}\{ (\exists w)_{\le x}(v^2+w^2=x) \} \]
+\[ SQSM(x) = (\exists t)_{\le x} PS(x - t^2) \]
 
 \subsection{}
 \[ \begin{array}{rl}
@@ -176,8 +179,7 @@ Since the latter can't be a predicate(whose value are 0 or 1), it must be the fo
 \end{array}\]
 
 \subsection{}
-\[ RP(x,y) = \neg\{ (\exists t)_{\le x}(t|x)\&(t|y) \ \lor\
-                    (\exists t)_{\le y}(t|x)\&(t|y)  \} \]
+\[ RP(x,y) = \sim (\exists t)_{\le x}(t|x)\&(t|y) \]
 
 \subsection{}
 Admit.
