@@ -231,15 +231,9 @@ has same range with $g(x)$.
 \end{enumerate}
 
 \subsection{}
-Suppose there is computable function $f(x)$ such that:
-\[ f(x) =
-     \begin{cases}
-       \Phi(x,x)+1 & \text{if } \Phi(x,x)\downarrow \\
-       0           & \text{otherwise}
-     \end{cases} \]
-Then
-\[ \alpha(\alpha(f(x))) \Leftrightarrow \mathrm{HALT}(x,x) \]
-which is not computable.
+Let program $\mathscr{P}$ computes function $ f(x) $,
+and $p$ be the number of $\mathscr{P}$. then
+\[ \Phi(p,p) = f(p) = \Phi(p, p) + 1. \]
 
 
 \subsection{}
